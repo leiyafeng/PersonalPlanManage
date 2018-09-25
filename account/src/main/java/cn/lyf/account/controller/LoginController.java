@@ -4,7 +4,7 @@ package cn.lyf.account.controller;
 import cn.lyf.account.bean.User;
 import cn.lyf.account.interceptor.Auth;
 import cn.lyf.account.service.UserService;
-import org.apache.ibatis.annotations.Param;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,10 +14,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
+
+
+@Slf4j
 @Controller
 @RequestMapping("/account")
 public class LoginController {
@@ -34,7 +35,7 @@ public class LoginController {
     }
 
     /**
-     * 登录验证
+     * 登录
      * @return
      */
     @RequestMapping("/login")
@@ -52,13 +53,13 @@ public class LoginController {
             //4.用户存在，将user放入session中，返回个人主页
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
             request.getSession().setAttribute("user",user);
-            modelAndView.setViewName("");
+            modelAndView.setViewName("aa");
         }
         return modelAndView;
     }
 
     @Auth
-    @RequestMapping("/aa")
+    @RequestMapping("/ssaa")
     public @ResponseBody String aa(){
         return "hello,how are you ";
     }
