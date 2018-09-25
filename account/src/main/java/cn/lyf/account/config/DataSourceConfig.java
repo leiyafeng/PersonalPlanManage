@@ -15,7 +15,7 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import javax.sql.DataSource;
 
 @Configuration
-@MapperScan(basePackages = "cn.lyf.account.dao" , sqlSessionFactoryRef="")
+@MapperScan(basePackages = "cn.lyf.account.dao" , sqlSessionFactoryRef="sqlSessionFactory")
 public class DataSourceConfig {
 
 

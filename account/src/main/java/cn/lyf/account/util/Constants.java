@@ -5,7 +5,7 @@ package cn.lyf.account.util;
  */
 public interface Constants {
     int MAX_FILE_UPLOAD_SIZE = 5242880;
-    String MOBILE_NUMBER_SESSION_KEY = "sessionMobileNumber";
-    String USER_CODE_SESSION_KEY = "userCode";
+    String USER_SESSION_KEY = "user";
+    String USER_NAME_SESSION_KEY = "userName";
     String SESSION_KEY = "sessionId";
 }
