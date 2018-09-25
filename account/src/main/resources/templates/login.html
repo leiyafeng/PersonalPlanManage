@@ -1,0 +1,45 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>登录</title>
+<link rel="stylesheet" type="text/css"  th:href="@{/css/style.css}" />
+<link rel="stylesheet" type="text/css"  th:href="@{/css/body.css}"/>
+</head>
+<body>
+<div class="container">
+	<section id="content">
+		<form action="">
+			<h1>登录</h1>
+			<div>
+				<input type="text" placeholder="账号"  id="userAccount" required
+					   oninvalid="setCustomValidity('请输入您的账号');" oninput="setCustomValidity('');" />
+			</div>
+			<div>
+				<input type="password" placeholder="密码" id="password" required
+					   oninvalid="setCustomValidity('请输入您的密码');" oninput="setCustomValidity('');" />
+			</div>
+			 <div class="">
+				<span class="help-block u-errormessage" id="js-server-helpinfo">&nbsp;</span>
+			 </div>
+			<div>
+				<!-- <input type="submit" value="Log in" /> -->
+				<input type="submit" value="登录" class="btn btn-primary" id="js-btn-login"/>
+				<a href="#">忘记密码?</a>
+				<!-- <a href="#">Register</a> -->
+			</div>
+		</form><!-- form -->
+		 <div class="button">
+			<span class="help-block u-errormessage" id="js-server-helpinfo1">&nbsp;</span>
+			<a href="#"></a>
+		</div> <!-- button -->
+	</section><!-- content -->
+</div>
+<!-- container -->
+
+
+<br><br><br><br>
+<div style="text-align:center;">
+<p>Copyright &copy; 2018@LYF</p>
+</div>
+</body>
+</html>
