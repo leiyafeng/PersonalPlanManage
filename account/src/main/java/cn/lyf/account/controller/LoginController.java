@@ -20,16 +20,16 @@ import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @Controller
-@RequestMapping("/account")
 public class LoginController {
     @Autowired
     UserService userService;
+
 
     /**
      * 登录首页
      * @return
      */
-    @GetMapping("/index")
+    @GetMapping("/")
     public String index(){
         return "login";
     }

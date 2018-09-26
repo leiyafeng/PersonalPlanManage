@@ -116,12 +116,8 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
-		<!--springSession相关jar包 -->
-		<dependency>
-			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session</artifactId>
-		</dependency>
-	</dependencies>
+
+</dependencies>
 
 	<build>
 		<plugins>
