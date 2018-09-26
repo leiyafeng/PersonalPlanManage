@@ -1,2 +1,2 @@
 # PersonalAccountManage
-个人账户管理系统
+个人计划管理系统
