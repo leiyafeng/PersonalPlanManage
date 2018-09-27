@@ -15,7 +15,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
-
+import javax.servlet.http.HttpSession;
 
 
 @Slf4j
@@ -53,7 +53,7 @@ public class LoginController {
             //4.用户存在，将user放入session中，返回个人主页
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
             request.getSession().setAttribute("user",user);
-            modelAndView.setViewName("aa");
+            modelAndView.setViewName("/workbench/workIndex");
         }
         return modelAndView;
     }

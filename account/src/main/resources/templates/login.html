@@ -9,7 +9,7 @@
 <body>
 <div class="container">
 	<section id="content">
-		<form action="/account/login" method="post">
+		<form th:action="@{/login}" method="post">
 			<h1>登录</h1>
 			<div>
 				<input type="text" placeholder="账号"  name="userAccount" required
