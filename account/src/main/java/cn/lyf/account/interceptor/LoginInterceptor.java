@@ -35,7 +35,8 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
                 method.isAnnotationPresent(Auth.class)) {
             if(request.getAttribute(USER_SESSION_KEY) == null){
                 log.info("用户未登录，请登录");
-                response.sendRedirect("index");
+                response.sendRedirect("/package/index.html");
+                return false;
             }else{
                 log.info("用户已经登录");
                 return true;

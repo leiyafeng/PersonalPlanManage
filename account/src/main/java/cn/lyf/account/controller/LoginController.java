@@ -40,7 +40,8 @@ public class LoginController {
      */
     @RequestMapping("/login")
     public ModelAndView login(@RequestParam ("userAccount") String userAccount,
-                              @RequestParam ("password") String password){
+                              @RequestParam ("password") String password,
+                              HttpServletRequest request){
         //1.获取参数
         //2.调service，根据userAccount和password查询用户是否存在
         User user = userService.getUserByUserAccountAndPassword(userAccount,password);
@@ -51,18 +52,13 @@ public class LoginController {
             modelAndView.setViewName("login");
         }else{
             //4.用户存在，将user放入session中，返回个人主页
-            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+           // HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
             request.getSession().setAttribute("user",user);
             modelAndView.setViewName("/workbench/workIndex");
         }
         return modelAndView;
     }
 
-    @Auth
-    @RequestMapping("/ssaa")
-    public @ResponseBody String aa(){
-        return "hello,how are you ";
-    }
 
 
 }
