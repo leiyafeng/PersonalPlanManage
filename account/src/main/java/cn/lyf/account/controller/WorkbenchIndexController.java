@@ -7,15 +7,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
 @Controller
-@RequestMapping("/personal")
 @Auth
-public class PersonalController {
+public class WorkbenchIndexController {
 
-
-    @RequestMapping("/")
-    public String personalIndex(){
-        log.info("进入个人主页");
-        return "/workbench/personal/personal";
+    @RequestMapping("/workbench/workIndex")
+    public String workIndex(){
+        return "/workbench/workIndex";
     }
-
 }

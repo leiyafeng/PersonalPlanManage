@@ -33,7 +33,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         //clazz.isAnnotationPresent(Auth.class判断类里面是否存在Auth注解
         if (clazz.isAnnotationPresent(Auth.class) ||
                 method.isAnnotationPresent(Auth.class)) {
-            if(request.getAttribute(USER_SESSION_KEY) == null){
+            if(request.getSession().getAttribute(USER_SESSION_KEY) == null){
                 log.info("用户未登录，请登录");
                 response.sendRedirect("/package/index.html");
                 return false;

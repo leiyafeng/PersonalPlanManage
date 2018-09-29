@@ -10,4 +10,13 @@ public interface UserService {
      * @return
      */
     User getUserByUserAccountAndPassword(String userAccount , String password);
+
+    /**
+     * 修改用户密码
+     * @param oldPwd
+     * @param newPwd
+     * @param confirmPwd
+     * @return
+     */
+    Boolean changePassword(String oldPwd,String newPwd , String confirmPwd);
 }

@@ -68,12 +68,9 @@
 				</div>
 				<div class="modal-body">
 					<div style="position: relative; left: 40px;">
-						姓名：<b>张三</b><br><br>
-						登录帐号：<b>zhangsan</b><br><br>
-						组织机构：<b>1005，市场部，二级部门</b><br><br>
-						邮箱：<b>zhangsan@123.com</b><br><br>
-						失效时间：<b>2017-02-14 10:10:10</b><br><br>
-						允许访问IP：<b>127.0.0.1,192.168.100.2</b>
+						姓名：<b th:text="${session.user.userName}"></b><br><br>
+						登录帐号：<b th:text="${session.user.userAccount}"></b><br><br>
+						创建时间：<b th:text="${session.user.creatTime}"></b><br><br>
 					</div>
 				</div>
 				<div class="modal-footer">
@@ -119,7 +116,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="window.location.href='../login.html';">更新</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="changePassword()">更新</button>
 				</div>
 			</div>
 		</div>
@@ -140,7 +137,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="window.location.href='../login.html';">确定</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="logout()">确定</button>
 				</div>
 			</div>
 		</div>
@@ -153,7 +150,7 @@
 			<ul>
 				<li class="dropdown user-dropdown">
 					<a href="javascript:void(0)" style="text-decoration: none; color: white;" class="dropdown-toggle" data-toggle="dropdown">
-						<span class="glyphicon glyphicon-user"></span> zhangsan <span class="caret"></span>
+						<span class="glyphicon glyphicon-user" th:text="${session.user.userName}"></span> <span class="caret" ></span>
 					</a>
 					<ul class="dropdown-menu">
 						<li><a href="javascript:void(0)" data-toggle="modal" data-target="#myInformation"><span class="glyphicon glyphicon-file"></span> 我的资料</a></li>
@@ -204,4 +201,43 @@
 	<div id="down" style="height: 30px; width: 100%; position: absolute;bottom: 0px;"></div>
 	
 </body>
+<script type="text/javascript" th:src="@{/jquery/jquery-1.11.1-min.js}"></script>
+<script type="text/javascript">
+	function logout(){
+	    window.location.href="/logout";
+    }
+    function changePassword() {
+	    var ordPwd = $("#oldPwd").val();
+	    var newPwd = $("#newPwd").val();
+	    var confirmPwd = $("#confirmPwd").val();
+        $.ajax({
+            type:'post',
+            url:'',
+            data:{
+                oldPwd:ordPwd,
+                newPwd:newPwd,
+                confirmPwd:confirmPwd
+            },
+            dataType:'json',
+            success:function(result){
+                if(result.success){
+                    alert("修改密码成功，请重新登录！");
+                    logout();
+                }else{
+                    alert("修改密码失败！")
+                }
+            },
+            error:function () {
+                alert("系统异常，请稍后再试！");
+            }
+
+        })
+    }
+</script>
+ <script th:inline="javascript">
+    /*<![CDATA[*/
+    var userName = [[${session.user.userName}]];
+
+    /*]]>*/
+</script>
 </html>

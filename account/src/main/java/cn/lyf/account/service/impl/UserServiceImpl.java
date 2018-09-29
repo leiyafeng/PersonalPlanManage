@@ -24,4 +24,17 @@ public class UserServiceImpl implements UserService {
         User user = userDao.getUserByUserAccountAndPassword(userAccount,password);
         return user;
     }
+
+    /**
+     * 修改用户密码
+     * @param oldPwd
+     * @param newPwd
+     * @param confirmPwd
+     * @return
+     */
+    @Override
+    public Boolean changePassword(String oldPwd, String newPwd, String confirmPwd) {
+        //1.判断旧密码是否匹配
+        return null;
+    }
 }

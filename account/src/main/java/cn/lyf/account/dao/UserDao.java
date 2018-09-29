@@ -14,7 +14,9 @@ public interface UserDao {
      * @param password
      * @return
      */
-    @Select("select * from t_user where user_account = #{userAccout} and user_password = #{password}")
+    @Select("select id as id,user_account as userAccount , user_password as password , " +
+            "user_name as userName , creat_time as creatTime , update_time as updateTime" +
+            " from t_user where user_account = #{userAccout} and user_password = #{password}")
     User getUserByUserAccountAndPassword(@Param("userAccout") String userAccount,@Param("password") String password);
 
 }

@@ -28,7 +28,8 @@ public class InterceptorConfig extends WebMvcConfigurerAdapter {
         // 注册监控拦截器
         registry.addInterceptor(loginInterceptor)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/index");
+                .excludePathPatterns("/index")
+                .excludePathPatterns("/login");
 
     }
 
