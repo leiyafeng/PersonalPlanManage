@@ -13,10 +13,9 @@ public interface UserService {
 
     /**
      * 修改用户密码
-     * @param oldPwd
+     * @param id
      * @param newPwd
-     * @param confirmPwd
      * @return
      */
-    Boolean changePassword(String oldPwd,String newPwd , String confirmPwd);
+    Boolean changePassword(Integer id,String newPwd );
 }

@@ -4,6 +4,7 @@ import cn.lyf.account.bean.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface UserDao {
@@ -19,4 +20,6 @@ public interface UserDao {
             " from t_user where user_account = #{userAccout} and user_password = #{password}")
     User getUserByUserAccountAndPassword(@Param("userAccout") String userAccount,@Param("password") String password);
 
+    @Update("update t_user set user_password=#{password} where id=#{id}")
+    Integer changePassword(@Param("id") Integer id,@Param("password") String newPwd);
 }

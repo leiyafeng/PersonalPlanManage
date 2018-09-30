@@ -27,14 +27,18 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 修改用户密码
-     * @param oldPwd
+     * @param id
      * @param newPwd
-     * @param confirmPwd
      * @return
      */
     @Override
-    public Boolean changePassword(String oldPwd, String newPwd, String confirmPwd) {
-        //1.判断旧密码是否匹配
-        return null;
+    public Boolean changePassword(Integer id, String newPwd) {
+
+        int count = userDao.changePassword(id,newPwd);
+        if(count>0){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

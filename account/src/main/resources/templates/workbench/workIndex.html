@@ -211,8 +211,9 @@
 	    var newPwd = $("#newPwd").val();
 	    var confirmPwd = $("#confirmPwd").val();
         $.ajax({
+            async: false,
             type:'post',
-            url:'',
+            url:'/changePassword',
             data:{
                 oldPwd:ordPwd,
                 newPwd:newPwd,
@@ -221,10 +222,10 @@
             dataType:'json',
             success:function(result){
                 if(result.success){
-                    alert("修改密码成功，请重新登录！");
+                    alert(result.msg);
                     logout();
                 }else{
-                    alert("修改密码失败！")
+                    alert(result.msg)
                 }
             },
             error:function () {

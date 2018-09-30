@@ -80,8 +80,9 @@ public class LoginController {
      * @param confirmPwd
      * @param request
      */
-    @RequestMapping("/changePassword")
     @Auth
+    @RequestMapping("/changePassword")
+    @ResponseBody
     public Map<String,Object> changePassword(@RequestParam("oldPwd") String oldPwd,
                                @RequestParam("newPwd") String newPwd,
                                @RequestParam("confirmPwd") String confirmPwd,
@@ -91,12 +92,34 @@ public class LoginController {
         User user = (User) request.getSession().getAttribute(USER_SESSION_KEY);
         if(!user.getPassword().equals(oldPwd)){
             map.put("success",false);
-            map.put("msg","输入的旧密码不正确！");
+            map.put("msg","请输入正确的旧密码");
+            return map;
         }
         //2.判断新密码两次输入是否一致
-        //3.修改密码
+        if(StringUtils.isNotBlank(newPwd) && StringUtils.isNotBlank(confirmPwd)){
+            if(newPwd.equals(confirmPwd)){
+                //3.修改密码操作
+                Boolean b  = userService.changePassword(user.getId() , newPwd);
+                if(b){
+                    map.put("success",true);
+                    map.put("msg","修改成功，请重新登陆！");
+                    return map;
+                }else{
+                    map.put("success",false);
+                    map.put("msg","修改失败，请重试！");
+                    return map;
+                }
+            }else{
+                map.put("success",false);
+                map.put("msg","输入的新密码和确认密码不一致！");
+                return map;
+            }
+        }else{
+            map.put("success",false);
+            map.put("msg","输入的新密码或确认密码不能为空！");
+            return map;
+        }
 
-        return map;
     }
 
 
