@@ -1,4 +1,4 @@
-package cn.lyf.account.controller;
+package cn.lyf.account.controller.progress;
 
 import cn.lyf.account.interceptor.Auth;
 import lombok.extern.slf4j.Slf4j;
@@ -7,15 +7,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
 @Controller
-@RequestMapping("/personal")
+@RequestMapping("/progress")
 @Auth
-public class PersonalController {
-
+public class ProgressController {
 
     @RequestMapping("/")
-    public String personalIndex(){
-        log.info("进入个人主页");
-        return "/workbench/personal/personal";
+    public String progressIndex(){
+        return "/workbench/progress/progressIndex";
     }
-
 }

@@ -1,4 +1,4 @@
-package cn.lyf.account.controller;
+package cn.lyf.account.controller.report;
 
 import cn.lyf.account.interceptor.Auth;
 import lombok.extern.slf4j.Slf4j;
@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
 @Controller
-@RequestMapping("/progress")
+@RequestMapping("/report")
 @Auth
-public class ProgressController {
+public class ReportController {
 
     @RequestMapping("/")
-    public String progressIndex(){
-        return "/workbench/progress/progressIndex";
+    public String reportIndex(){
+        return "/workbench/report/reportIndex";
     }
 }

@@ -1,4 +1,4 @@
-package cn.lyf.account.controller;
+package cn.lyf.account.controller.plan;
 
 import cn.lyf.account.interceptor.Auth;
 import lombok.extern.slf4j.Slf4j;
@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
 @Controller
-@RequestMapping("report")
 @Auth
-public class ReportController {
+@RequestMapping("/plan")
+public class PlanController {
 
     @RequestMapping("/")
-    public String reportIndex(){
-        return "/workbench/report/reportIndex";
+    public String planIndex(){
+        return "/workbench/plan/planIndex";
     }
 }

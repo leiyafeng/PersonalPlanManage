@@ -1,4 +1,4 @@
-package cn.lyf.account.controller;
+package cn.lyf.account.controller.main;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

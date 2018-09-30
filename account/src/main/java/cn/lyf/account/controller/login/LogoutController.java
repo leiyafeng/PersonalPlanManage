@@ -1,4 +1,4 @@
-package cn.lyf.account.controller;
+package cn.lyf.account.controller.login;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -10,6 +10,7 @@ import static cn.lyf.account.util.Constants.USER_SESSION_KEY;
 
 @Slf4j
 @Controller
+@RequestMapping("/login")
 public class LogoutController {
 
     @RequestMapping("/logout")
