@@ -28,14 +28,7 @@ public class LoginController {
     UserService userService;
 
 
-    /**
-     * 登录首页
-     * @return
-     */
-    @GetMapping("/")
-    public String index(){
-        return "login";
-    }
+
 
     /**
      * 登录

@@ -70,7 +70,7 @@
 					<div style="position: relative; left: 40px;">
 						姓名：<b th:text="${session.user.userName}"></b><br><br>
 						登录帐号：<b th:text="${session.user.userAccount}"></b><br><br>
-						创建时间：<b th:text="${session.user.creatTime}"></b><br><br>
+						上次登陆时间：<b th:text="${session.user.lastLogin==null? '您已经好长时间没登陆啦':session.user.lastLogin}"></b><br><br>
 					</div>
 				</div>
 				<div class="modal-footer">
@@ -150,7 +150,7 @@
 			<ul>
 				<li class="dropdown user-dropdown">
 					<a href="javascript:void(0)" style="text-decoration: none; color: white;" class="dropdown-toggle" data-toggle="dropdown">
-						<span class="glyphicon glyphicon-user" th:text="${session.user.userName}"></span> <span class="caret" ></span>
+						<span class="glyphicon glyphicon-user" th:text="${session.user.userName}"></span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<span class="caret" ></span>
 					</a>
 					<ul class="dropdown-menu">
 						<li><a href="javascript:void(0)" data-toggle="modal" data-target="#myInformation"><span class="glyphicon glyphicon-file"></span> 我的资料</a></li>
@@ -172,12 +172,26 @@
 				<li class="liClass">
                     <a href="javascript:void(0)" onclick="personal()" target="workareaFrame">
                         <span class="glyphicon glyphicon-home"></span> 个人主页</a></li>
-				<li class="liClass">
+				<!--<li class="liClass">
                     <a href="javascript:void(0);" onclick="plan()" target="workareaFrame">
-                        <span class="glyphicon glyphicon-tag"></span> 个人目标</a></li>
+                        <span class="glyphicon glyphicon-tag"></span> 计划管理</a></li>
+				<li class="liClass">-->
+				<li class="liClass">
+					<a href="#no2" class="collapsed" data-toggle="collapse"><span
+							class="glyphicon glyphicon-tag"></span> 计划管理</a>
+					<ul id="no2" class="nav nav-pills nav-stacked collapse">
+						<li class="liClass"><a href="javascript:void(0);" onclick="plan()" target="workareaFrame">&nbsp;&nbsp;&nbsp;<span
+								class="glyphicon glyphicon-chevron-right"></span> 创建新计划</a></li>
+						<li class="liClass"><a href="javascript:void(0);" onclick="plan()" target="workareaFrame">&nbsp;&nbsp;&nbsp;<span
+								class="glyphicon glyphicon-chevron-right"></span> 进行中计划</a></li>
+						<li class="liClass"><a href="javascript:void(0);" onclick="plan()" target="workareaFrame">&nbsp;&nbsp;&nbsp;<span
+								class="glyphicon glyphicon-chevron-right"></span> 历史计划</a></li>
+					</ul>
+				</li>
 				<li class="liClass">
                     <a href="javascript:void(0);" onclick="progress()" target="workareaFrame">
-                        <span class="glyphicon glyphicon-time"></span> 执行进度</a></li>
+                        <span class="glyphicon glyphicon-time"></span> 执行进度</a>
+				</li>
 				<li class="liClass">
 					<a href="javascript:void(0);" onclick="report()" target="workareaFrame">
                         <span class="glyphicon glyphicon-stats"></span> 统计报告</a>
