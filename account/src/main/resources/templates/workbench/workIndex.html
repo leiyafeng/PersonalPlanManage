@@ -70,7 +70,7 @@
 					<div style="position: relative; left: 40px;">
 						姓名：<b th:text="${session.user.userName}"></b><br><br>
 						登录帐号：<b th:text="${session.user.userAccount}"></b><br><br>
-						上次登陆时间：<b th:text="${session.user.lastLogin==null? '您已经好长时间没登陆啦':session.user.lastLogin}"></b><br><br>
+						上次登陆时间：<b th:text="${session.user.lastLogin==null?'您是头一次来吧':#dates.format(session.user.lastLogin,'yyyy-MM-dd HH:mm:ss')}"></b><br><br>
 					</div>
 				</div>
 				<div class="modal-footer">
@@ -248,11 +248,5 @@
 
         })
     }
-</script>
- <script th:inline="javascript">
-    /*<![CDATA[*/
-    var userName = [[${session.user.userName}]];
-
-    /*]]>*/
 </script>
 </html>

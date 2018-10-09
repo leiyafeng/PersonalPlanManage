@@ -2,8 +2,10 @@ package cn.lyf.account.controller.login;
 
 
 import cn.lyf.account.bean.User;
+import cn.lyf.account.dao.UserDao;
 import cn.lyf.account.interceptor.Auth;
 import cn.lyf.account.service.UserService;
+import cn.lyf.account.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +29,8 @@ import static cn.lyf.account.util.Constants.USER_SESSION_KEY;
 public class LoginController {
     @Autowired
     UserService userService;
-
+    @Resource
+    private UserDao userDao;
 
 
 
@@ -53,8 +57,10 @@ public class LoginController {
                 model.put("message","用户名或密码错误");
             }else{
                 //4.用户存在，将user放入session中，返回个人主页
-                // HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
                 request.getSession().setAttribute(USER_SESSION_KEY,user);
+                //5.更新用户最近登录时间
+                String date = DateUtils.getStringDate();
+                userDao.changeLastLoginTime(user.getId(),date);
                 log.info("user="+user);
                 log.info("userSession="+request.getSession().getAttribute("user"));
                 model.put("success",true);

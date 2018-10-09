@@ -22,8 +22,7 @@ import static cn.lyf.account.util.Constants.*;
 @Slf4j
 @Component
 public class LoginInterceptor extends HandlerInterceptorAdapter {
-    @Resource
-    private UserDao userDao;
+
     //private RedisUtil redisUtils;
     private final static String SESSION_KEY_PREFIX = "session:";
     public boolean preHandle(HttpServletRequest request,
@@ -44,9 +43,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
                 response.sendRedirect("/package/index.html");
                 return false;
             }else{
-                //更新最近登陆时间
-                updateLastLogin(request);
-                log.info("用户已经登录,已修改最近登陆时间");
+                log.info("用户已经登录");
                 return true;
             }
         }
@@ -55,13 +52,6 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 
     }
 
-    //更新用户最近登陆时间
-    public void updateLastLogin(HttpServletRequest request){
-        User user = (User) request.getSession().getAttribute(USER_SESSION_KEY);
-        String date = DateUtils.getStringDate();
-        userDao.changeLastLoginTime(user.getId(),date);
-
-    }
 
     public void handlerSession(HttpServletRequest request) {
         String sessionId = request.getHeader(SESSION_KEY);
