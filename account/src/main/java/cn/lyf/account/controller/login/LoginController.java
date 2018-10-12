@@ -2,7 +2,6 @@ package cn.lyf.account.controller.login;
 
 
 import cn.lyf.account.bean.User;
-import cn.lyf.account.dao.UserDao;
 import cn.lyf.account.interceptor.Auth;
 import cn.lyf.account.service.UserService;
 import cn.lyf.account.util.DateUtils;
@@ -10,13 +9,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,8 +28,6 @@ import static cn.lyf.account.util.Constants.USER_SESSION_KEY;
 public class LoginController {
     @Autowired
     UserService userService;
-    @Resource
-    private UserDao userDao;
 
 
 
@@ -50,7 +47,11 @@ public class LoginController {
             model.put("success",false);
             model.put("message","请填写账号和密码");
         }else{
+            User reqUser = new User();
+            reqUser.setUserAccount(userAccount);
+            reqUser.setPassword(password);
             User user = userService.getUserByUserAccountAndPassword(userAccount,password);
+            log.info("登录查询结果是"+user);
             if(user == null){
                 //3.用户不存在，返回用户或密码错误
                 model.put("success",false);
@@ -59,8 +60,9 @@ public class LoginController {
                 //4.用户存在，将user放入session中，返回个人主页
                 request.getSession().setAttribute(USER_SESSION_KEY,user);
                 //5.更新用户最近登录时间
-                String date = DateUtils.getStringDate();
-                userDao.changeLastLoginTime(user.getId(),date);
+                //String date = DateUtils.getStringDate();
+                Date lastDate = new Date();
+                userService.updateLastLoginById(user.getId(),lastDate);
                 log.info("user="+user);
                 log.info("userSession="+request.getSession().getAttribute("user"));
                 model.put("success",true);

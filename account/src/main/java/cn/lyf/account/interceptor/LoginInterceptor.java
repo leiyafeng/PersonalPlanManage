@@ -1,21 +1,15 @@
 package cn.lyf.account.interceptor;
 
 import cn.lyf.account.bean.SessionData;
-import cn.lyf.account.bean.User;
-import cn.lyf.account.dao.UserDao;
-import cn.lyf.account.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
-import java.util.Date;
 
 import static cn.lyf.account.util.Constants.*;
 
