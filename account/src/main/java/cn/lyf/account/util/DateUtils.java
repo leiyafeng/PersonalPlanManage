@@ -9,6 +9,9 @@ import java.util.Date;
  */
 public class DateUtils {
 
+    public static final String  YYYY_MM_DD_HH_MM_SS="yyyy-MM-dd HH:mm:ss";
+    public static final String  YYYYMMDD="yyyyMMdd";
+
     /**
      * 获取现在时间
      *
@@ -41,6 +44,18 @@ public class DateUtils {
     public static String getStringDate() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String dateString = formatter.format(new Date());
+        return dateString;
+    }
+
+    /**
+     * date类型转指定格式String类型
+     * @param date
+     * @param format
+     * @return
+     */
+    public static String dateToString(Date date,String format){
+        SimpleDateFormat formatter = new SimpleDateFormat(format);
+        String dateString = formatter.format(date);
         return dateString;
     }
 

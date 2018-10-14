@@ -16,8 +16,8 @@
 	$(function(){
 		
 		//以下日历插件在FF中存在兼容问题，在IE浏览器中可以正常使用。
-		/*
-		$("#startTime").datetimepicker({
+
+		$(".date").datetimepicker({
 			minView: "month",
 			language:  'zh-CN',
 			format: 'yyyy-mm-dd',
@@ -26,7 +26,7 @@
 	        pickerPosition: "bottom-left"
 		});
 		
-		$("#endTime").datetimepicker({
+		$(".date").datetimepicker({
 			minView: "month",
 			language:  'zh-CN',
 			format: 'yyyy-mm-dd',
@@ -34,7 +34,7 @@
 	        todayBtn: true,
 	        pickerPosition: "bottom-left"
 		});
-		*/
+
 		
 		//定制字段
 		$("#definedColumns > li").click(function(e) {
@@ -43,13 +43,45 @@
 	    });
 		
 	});
+	//创建计划
+	function creatPlan() {
+		//获取数据
+		var data = {
+		    "goal":$("#goal").val().toString(),
+			"planPriority":$("#planPriority").val().toString(),
+			"planBegainTime":$("#create-startTime").val().toString(),
+			"planEndTime":$("#create-endTime").val().toString(),
+			"planDescription":$("#create-describe").val().toString()
+		}
+		//发送ajax请求
+		$.ajax({
+			type:"post",
+			url:"/plan/creatPlan",
+			data:JSON.stringify(data),
+            dataType: "json",
+            contentType: "application/json",
+			success:function (ajaxData) {
+				if(1==ajaxData.code){
+				    //创建成功
+					alert(ajaxData.msg);
+				}else {
+                    //创建失败
+                    $("#createPlanModal").modal('show');
+                    alert(ajaxData.msg)
+                }
+            },
+			error:function () {
+				alert("异常");
+            }
+		})
+    }
 	
 </script>
 </head>
 <body>
 
 	<!-- 创建计划的模态窗口 -->
-	<div class="modal fade" id="createActivityModal" role="dialog">
+	<div class="modal fade" id="createPlanModal" role="dialog">
 		<div class="modal-dialog" role="document" style="width: 85%;">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -63,30 +95,30 @@
 					<form class="form-horizontal" role="form">
 					
 						<div class="form-group">
-							<label for="planName" class="col-sm-2 control-label">计划名称<span style="font-size: 15px; color: red;">*</span></label>
+							<label for="goal" class="col-sm-2 control-label">计划名称<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-                                <input type="text" class="form-control" id="planName">
+                                <input type="text" class="form-control" id="goal">
 							</div>
-							<label for="create-marketActivityType" class="col-sm-2 control-label">优先级<span style="font-size: 15px; color: red;">*</span></label>
+							<label for="planPriority" class="col-sm-2 control-label">优先级<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
-								<select class="form-control" id="create-marketActivityType">
+								<select class="form-control" id="planPriority">
 								  <option></option>
-								  <option>非紧急</option>
-								  <option>普通</option>
-								  <option>紧急</option>
+								  <option value="1">非紧急</option>
+								  <option value="2">普通</option>
+								  <option value="3">紧急</option>
 								</select>
 							</div>
 						</div>
 						
 
 						<div class="form-group">
-							<label for="create-startTime" class="col-sm-2 control-label">开始日期<span style="font-size: 15px; color: red;">*</span></label>
+							<label for="create-startTime" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-startTime">
+								<input type="text" class="form-control date" id="create-startTime">
 							</div>
-							<label for="create-endTime" class="col-sm-2 control-label">结束日期<span style="font-size: 15px; color: red;">*</span></label>
+							<label for="create-endTime" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="create-endTime">
+								<input type="text"  class="form-control date" id="create-endTime">
 							</div>
 						</div>
 						
@@ -103,7 +135,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-					<button type="button" class="btn btn-primary" data-dismiss="modal">保存</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="creatPlan()">保存</button>
 				</div>
 			</div>
 		</div>
@@ -143,11 +175,11 @@
 						<div class="form-group">
 							<label for="edit-startTime" class="col-sm-2 control-label">开始日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-startTime" value="2020-10-10">
+								<input type="text" class="form-control date" id="edit-startTime" value="">
 							</div>
 							<label for="edit-endTime" class="col-sm-2 control-label">结束日期</label>
 							<div class="col-sm-10" style="width: 300px;">
-								<input type="text" class="form-control" id="edit-endTime" value="2020-10-20">
+								<input type="text" class="form-control date" id="edit-endTime" value="">
 							</div>
 						</div>
 						
@@ -220,15 +252,15 @@
 				  <br>
 				  <div class="form-group">
 				    <div class="input-group">
-				      <div class="input-group-addon">开始日期</div>
-					  <input class="form-control" type="text" id="startTime" />
+				      <div class="input-group-addon" >开始日期</div>
+					  <input class="form-control date" type="text" id="startTime" />
 				    </div>
 				  </div>
 				  
 				  <div class="form-group">
 				    <div class="input-group">
 				      <div class="input-group-addon">结束日期</div>
-					  <input class="form-control" type="text" id="endTime">
+					  <input class="form-control date" type="text" id="endTime">
 				    </div>
 				  </div>
 				  
@@ -238,8 +270,10 @@
 			</div>
 			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 5px;">
 				<div class="btn-group" style="position: relative; top: 18%;">
-				  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createActivityModal"><span class="glyphicon glyphicon-plus"></span> 创建计划</button>
-				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editActivityModal"><span class="glyphicon glyphicon-pencil"></span> 修改计划</button>
+				  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createPlanModal">
+					  <span class="glyphicon glyphicon-plus"></span> 创建计划</button>
+				  <button type="button" class="btn btn-default" data-toggle="modal" data-target="#editActivityModal">
+					  <span class="glyphicon glyphicon-pencil"></span> 修改计划</button>
 				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 废弃计划</button>
 				</div>
 				<div class="btn-group" style="position: relative; top: 18%;">

@@ -21,11 +21,12 @@
 			 <div class="">
 				<span class="help-block u-errormessage" id="js-server-helpinfo">&nbsp;</span>
 			 </div>
-            <div align="center">
+            <div style="text-align:center">
                 <label id="msg">
                 </label>
                 <!-- <input type="submit" value="Log in" /> -->
                 <input type="submit"  value="登录" class="btn btn-primary" id="btn-login"/>
+				<input type="reset" value="重置" class="btn btn-primary" /> </span>
                 <!--<a href="#">忘记密码?</a>-->
                 <!-- <a href="#">Register</a> -->
             </div>
@@ -39,33 +40,12 @@
 <!-- container -->
 <br><br><br><br>
 <div style="text-align:center;">
-<p>Copyright &copy; 2018@LYF</p>
+<p>Copyright &copy; 2018 LEIYAFENG</p>
 </div>
 </body>
 <script type="text/javascript" th:src="@{/jquery/jquery-1.11.1-min.js}"></script>
 <script type="text/javascript">
-        /*$("#login-form").submit(function () {
-            alert(1);
-            // parent.layer.close(index); //再执行关闭
-            $.ajax({
-                async: false,
-                type: "POST",
-                url: '/login',
-                contentType: "application/x-www-form-urlencoded; charset=utf-8",
-                data: $("#login-form").serialize(),
-                dataType: "json",
-                success: function (data) {
-                    if (data.sucess) {
 
-                        alert("成功");
-                    }
-                },
-                error: function () {
-                    alert("失败");
-                }
-            })
-            return false;
-        })*/
     $("#btn-login").click(function () {
         $.ajax({
             async: false,
@@ -78,7 +58,7 @@
                 if (data.success) {
                     window.location.href="/workbench/workIndex";
                 }else{
-                    $("#msg").html("<font color='#FF0000'>"+data.message+"</font>");
+                    $("#js-server-helpinfo").html("<font color='#FF0000'>"+data.message+"</font>");
                 }
             },
             error: function () {

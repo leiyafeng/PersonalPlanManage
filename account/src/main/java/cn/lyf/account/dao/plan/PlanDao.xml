@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.lyf.account.dao.plan.PlanDao" >
+
+    <resultMap id="planMap" type="cn.lyf.account.bean.Plan">
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="user_id" property="userId" jdbcType="INTEGER" />
+        <result column="goal" property="goal" jdbcType="VARCHAR" />
+        <result column="plan_begain_time" property="planBegainTime" jdbcType="TIMESTAMP" />
+        <result column="plan_end_time" property="planEndTime" jdbcType="TIMESTAMP" />
+        <result column="plan_priority" property="planPriority" jdbcType="INTEGER" />
+        <result column="plan_description" property="planDescription" jdbcType="VARCHAR" />
+        <result column="plan_ahead_time" property="planAheadTime" jdbcType="INTEGER" />
+        <result column="plan_delay_time" property="planDelayTime" jdbcType="INTEGER" />
+        <result column="plan_progress" property="planProgress" jdbcType="INTEGER" />
+        <result column="creat_time" property="creatTime" jdbcType="TIMESTAMP" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <!--插入计划 -->
+    <insert id="insertPlan" parameterType="cn.lyf.account.bean.Plan">
+        INSERT into t_plan
+        (user_id,goal,plan_begain_time,plan_end_time,plan_priority,plan_description,plan_progress)
+        VALUES
+        (#{userId},#{goal},#{planBegainTime},#{planEndTime},#{planPriority},#{planDescription},#{planProgress})
+    </insert>
+</mapper>

@@ -40,6 +40,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean changePassword(Integer id, String newPwd) {
         User user = new User();
+        user.setId(id);
+        user.setPassword(newPwd);
         int count = userDao.updateUserByUser(user);
         if(count>0){
             return true;
