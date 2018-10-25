@@ -12,7 +12,7 @@
         <result column="plan_description" property="planDescription" jdbcType="VARCHAR" />
         <result column="plan_ahead_time" property="planAheadTime" jdbcType="INTEGER" />
         <result column="plan_delay_time" property="planDelayTime" jdbcType="INTEGER" />
-        <result column="plan_progress" property="planProgress" jdbcType="INTEGER" />
+        <result column="plan_status" property="planStatus" jdbcType="INTEGER" />
         <result column="creat_time" property="creatTime" jdbcType="TIMESTAMP" />
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
     </resultMap>
@@ -20,8 +20,20 @@
     <!--插入计划 -->
     <insert id="insertPlan" parameterType="cn.lyf.account.bean.Plan">
         INSERT into t_plan
-        (user_id,goal,plan_begain_time,plan_end_time,plan_priority,plan_description,plan_progress)
+        (user_id,goal,plan_begain_time,plan_end_time,plan_priority,plan_description,plan_status)
         VALUES
-        (#{userId},#{goal},#{planBegainTime},#{planEndTime},#{planPriority},#{planDescription},#{planProgress})
+        (#{userId},#{goal},#{planBegainTime},#{planEndTime},#{planPriority},#{planDescription},#{planStatus})
     </insert>
+
+    <!-- 分页查询计划列表-->
+    <select id="findAllPlanByPage" resultMap="planMap"  parameterType="HashMap">
+
+        select * from t_plan limit #{start},#{end};
+
+    </select>
+    <select id="getTotal" resultType="Integer">
+        SELECT count(0)
+        from
+        t_plan
+    </select>
 </mapper>

@@ -6,6 +6,9 @@ import cn.lyf.account.service.PlanService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class PlanServiceImpl implements PlanService {
@@ -25,5 +28,20 @@ public class PlanServiceImpl implements PlanService {
         }else{
             return false;
         }
+    }
+
+    @Override
+    public List<Plan> findAllPlanByPage(Integer pageSize, Integer pageNumber) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("start",pageNumber);
+        map.put("end",pageSize);
+        List<Plan> planList = planDao.findAllPlanByPage(map);
+        return planList;
+    }
+
+    @Override
+    public int getTotal() {
+
+        return planDao.getTotal();
     }
 }

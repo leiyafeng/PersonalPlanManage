@@ -30,7 +30,7 @@ public class Plan {
     /**
      * 计划状态：1.已完成 2.进行中 3.未完成 4.废弃 5.延期
      */
-    private Integer planProgress;
+    private Integer planStatus;
     private Date creatTime;
     private Date updateTime;
 
