@@ -28,14 +28,14 @@
     <!-- 分页查询计划列表-->
     <select id="findAllPlanByPage" resultMap="planMap"  parameterType="HashMap">
 
-        select * from t_plan limit #{start},#{end};
+        select * from t_plan where user_id = #{userId} limit #{start},#{end};
 
     </select>
     <!--查询计划总条数-->
     <select id="getTotal" resultType="Integer">
         SELECT count(0)
         from
-        t_plan
+        t_plan where user_id=#{userId}
     </select>
     <!--修改计划-->
     <update id="updatePlanById" parameterType="cn.lyf.account.bean.Plan" >

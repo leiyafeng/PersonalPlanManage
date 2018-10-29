@@ -59,4 +59,23 @@ public class DateUtils {
         return dateString;
     }
 
+    /**
+     * 比较两个时间大小（指定格式）
+     * d1>d2时返回true，否则返回false
+     * @param d1
+     * @param d2
+     * @return
+     */
+    public static Boolean compareDate(Date d1,Date d2,String fomart){
+        Boolean flag=false;
+        String  begainDate = DateUtils.dateToString(d1,fomart);
+        String  endDate = DateUtils.dateToString(d2,fomart);
+        if(Integer.valueOf(endDate)<Integer.valueOf(begainDate)){
+            flag = true;
+        }
+        return flag;
+
+    }
+
+
 }

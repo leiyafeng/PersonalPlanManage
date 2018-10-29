@@ -23,7 +23,7 @@ public interface PlanDao {
      * 获取列表总条数
      * @return
      */
-    int getTotal();
+    int getTotal(Map<String,Object> map);
 
     /**
      * 根据id更新计划

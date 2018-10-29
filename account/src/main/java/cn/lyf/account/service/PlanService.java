@@ -20,18 +20,19 @@ public interface PlanService {
      * @param limit
      * @return
      */
-    List<Plan> findAllPlanByPage(Integer start,Integer limit);
+    List<Plan> findAllPlanByPage(Integer start,Integer limit,Integer userId);
 
     /**
      * 获取计划列表总条数
      * @return
      */
-    int getTotal();
+    int getTotal(Integer userId);
 
     /**
      * 修改计划根据Id
      * @param plan
      * @return
      */
+    @Transactional
     Boolean updatePlanById(Plan plan);
 }

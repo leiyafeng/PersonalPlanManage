@@ -14,7 +14,6 @@
 <script type="text/javascript" th:src="@{/jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js}"></script>
 <script type="text/javascript" th:src="@{/jquery/bootstrap-table/js/bootstrap-table.min.js}"></script>
 <script type="text/javascript" th:src="@{/jquery/bootstrap-table/js/bootstrap-table-zh-CN.js}"></script>
-<script type="text/javascript" th:src="@{/xcConfirm/js/jquery-confirm-1.9.1.js}"></script>
 <script type="text/javascript" th:src="@{/xcConfirm/js/xcConfirm.js}"></script>
 
 <script type="text/javascript">
@@ -272,7 +271,6 @@
 	//3.修改计划
 	function editPlan(){
         var plan= $('#table').bootstrapTable('getSelections');
-
         //3.1展示当前计划字段值
         if(plan.length==1){
             //判断是否为已过期计划，过期计划不能修改
@@ -280,7 +278,8 @@
             var today = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
             var endTime = changeDateFormat(plan[0].planEndTime);
             if(today>endTime){
-                alert('该计划已经结束不能修改');
+                var txt = "<h4 style='color:indianred'>亲，该计划已经结束不能修改啦！</h4>";
+                window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
                 return;
             }
 			$("#editGoal").val(plan[0].goal);
@@ -309,13 +308,15 @@
 	}
 	//4.确认修改计划
     function updatePlan(){
-        //确认修改计划吗？
-        var txt=  "确认修改计划吗？";
+        //判断结束时间是否小于当前时间
+        var d = new Date();
+        var today = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+        var endTime = changeDateFormat($("#edit-endTime").val());
         var options = {
-			title:'提示',
+            title:'提示',
             btn:parseInt("0011",2),
             onOk:function(){
-			    //确认修改
+                //确认修改
                 var plan= $('#table').bootstrapTable('getSelections');
                 //4.1 获取修改后的值
                 var data = {
@@ -336,30 +337,90 @@
                     success:function(ajaxData){
                         if(1==ajaxData.code){
                             //修改成功
-                            var txt=  "<h4>"+ajaxData.msg+"</h4>";
+                            var txt=  "<h3 style='color:green'>"+ajaxData.msg+"</h3>";
                             window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.success);
                             $("#editPlanModal").modal('hide');
                             refresh();
                         }else {
                             //修改失败
-                            $("#createPlanModal").modal('show');
-                            var txt=  "<h4>"+ajaxData.msg+"</h4>";
+                            $("#editPlanModal").modal('show');
+                            var txt=  "<h3 style='color: red'>"+ajaxData.msg+"</h3>";
                             window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.error);
                             editPlan();
                         }
                     },
                     error:function () {
-                        var txt=  "<h4>系统暂时忙不过来啦，<br>请稍后再试啦！</h4>";
+                        var txt=  "<h4 style='color: red'>系统暂时忙不过来啦，<br>请稍后再试啦！</h4>";
                         window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.error);
                     }
                 })
-			},
+            },
             onCancel:function () {
                 $("#editPlanModal").modal('show');
                 return;
             }
+        }
+        if(today>endTime){
+            var txt1 = "<h4 style='color:indianred'>修改后的结束时间已过期，修改后该计划状态就变成已结束计划！</h4>";
+            window.wxc.xcConfirm(txt1, window.wxc.xcConfirm.typeEnum.confirm,options);
+            return;
+        }else{
+            //确认修改计划吗？
+            var txt=  "<h3 style = 'color:orange'>确认修改计划吗？</h3>";
+            window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.confirm,options);
 		}
-        window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.confirm,options);
+	}
+	//5. 废弃计划
+	function giveUp(){
+        //5.1判断是否选中计划
+        var plan= $('#table').bootstrapTable('getSelections');
+        if(plan.length<1){
+            //未选中计划，提示选中计划
+            var txt = "<h4>亲，请先选择一条想要废弃的计划啦！</h4>";
+            window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
+		}else{
+            //选中计划，确认废弃计划吗？一旦废弃不可撤销！
+			var txt = '<h4 style="color: red">您确认废弃计划吗？一旦废弃不可撤销哟！</h4>';
+            var options = {
+                title:'警告！',
+                btn:parseInt("0011",2),
+                onOk:function(){
+                    //确认废弃
+                    var plan= $('#table').bootstrapTable('getSelections');
+					//获取要废弃的id数组
+					//var ids =
+                    //5.2 ajax调用后台,废弃计划
+
+                    $.ajax({
+                        url:'/plan/discardPlan',
+                        type:'post',
+                        data:JSON.stringify(plan),
+                        dataType:'json',
+                        contentType:'application/json',
+                        success:function(ajaxData){
+                            if(1==ajaxData.code){
+                                //废弃成功
+                                var txt=  "<h4>"+ajaxData.msg+"</h4>";
+                                window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.success);
+                                refresh();
+                            }else {
+                                //废弃失败
+                                var txt=  "<h4>"+ajaxData.msg+"</h4>";
+                                window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.error);
+                            }
+                        },
+                        error:function () {
+                            var txt=  "<h4 style='color: red'>系统暂时忙不过来啦，<br>请稍后再试啦！</h4>";
+                            window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.error);
+                        }
+                    })
+                },
+                onCancel:function () {
+                    return;
+                }
+            }
+            window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.confirm,options);
+		}
 	}
     //转换日期格式(时间戳转换为datetime格式)
     function changeDateFormat(cellval) {
@@ -518,7 +579,7 @@
 					  <span class="glyphicon glyphicon-plus"></span> 创建计划</button>
 				  <button type="button" class="btn btn-default" data-toggle="modal"  id="eidtPlanButton" onclick="editPlan()">
 					  <span class="glyphicon glyphicon-pencil"></span> 修改计划</button>
-				  <button type="button" class="btn btn-danger"><span class="glyphicon glyphicon-minus"></span> 废弃计划</button>
+				  <button type="button" class="btn btn-danger" onclick="giveUp()"><span class="glyphicon glyphicon-minus"></span> 废弃计划</button>
 				</div>
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <!--<button type="button" class="btn btn-default" data-toggle="modal" data-target="#importActivityModal"><span class="glyphicon glyphicon-import"></span> 导入</button>-->
@@ -554,10 +615,10 @@
 							<div class="input-group-addon">状态</div>
 							<select class="form-control">
 								<option></option>
+								<option>新建</option>
 								<option>进行中</option>
-								<option>已完成</option>
 								<option>延期</option>
-								<option>未完成</option>
+								<option>已完成</option>
 							</select>
 						</div>
 					</div>
@@ -568,21 +629,18 @@
 							<input class="form-control date" type="text" id="startTime" readonly/>
 						</div>
 					</div>
-
 					<div class="form-group">
 						<div class="input-group">
 							<div class="input-group-addon">结束日期</div>
 							<input class="form-control date" type="text" id="endTime" readonly />
 						</div>
 					</div>
-
 					<button type="submit" class="btn btn-default">查询</button>
 
 				</form>
 			</div>
 			<div style="position: relative;top: 10px;">
 				<table class="table table-hover" id="table" style="table-layout: fixed; " >
-
 				</table>
 			</div>
 		</div>

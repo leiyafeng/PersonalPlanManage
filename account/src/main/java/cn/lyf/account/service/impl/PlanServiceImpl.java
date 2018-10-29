@@ -33,21 +33,24 @@ public class PlanServiceImpl implements PlanService {
     }
 
     @Override
-    public List<Plan> findAllPlanByPage(Integer pageSize, Integer pageNumber) {
+    public List<Plan> findAllPlanByPage(Integer pageSize, Integer pageNumber, Integer userId) {
         Map<String,Object> map = new HashMap<>();
         map.put("start",pageNumber);
         map.put("end",pageSize);
+        map.put("userId",userId);
         List<Plan> planList = planDao.findAllPlanByPage(map);
         return planList;
     }
 
     /**
-     * 获取计划总条数
+     * 根据userId获取计划总条数
      * @return
      */
     @Override
-    public int getTotal() {
-        return planDao.getTotal();
+    public int getTotal(Integer userId) {
+        Map<String, Object > reqMap = new HashMap<>();
+        reqMap.put("userId",userId);
+        return planDao.getTotal(reqMap);
     }
 
     /**
