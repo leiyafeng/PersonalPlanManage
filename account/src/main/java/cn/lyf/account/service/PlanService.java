@@ -1,6 +1,7 @@
 package cn.lyf.account.service;
 
 import cn.lyf.account.bean.Plan;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ public interface PlanService {
      * @param plan
      * @return
      */
+    @Transactional
     Boolean creatPlan(Plan plan);
 
     /**
@@ -25,4 +27,11 @@ public interface PlanService {
      * @return
      */
     int getTotal();
+
+    /**
+     * 修改计划根据Id
+     * @param plan
+     * @return
+     */
+    Boolean updatePlanById(Plan plan);
 }

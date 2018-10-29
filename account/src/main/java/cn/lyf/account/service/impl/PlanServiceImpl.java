@@ -4,6 +4,7 @@ import cn.lyf.account.bean.Plan;
 import cn.lyf.account.dao.plan.PlanDao;
 import cn.lyf.account.service.PlanService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ public class PlanServiceImpl implements PlanService {
      * @param plan
      * @return
      */
+    @Transactional
     @Override
     public Boolean creatPlan(Plan plan) {
         int i = planDao.insertPlan(plan);
@@ -39,9 +41,28 @@ public class PlanServiceImpl implements PlanService {
         return planList;
     }
 
+    /**
+     * 获取计划总条数
+     * @return
+     */
     @Override
     public int getTotal() {
-
         return planDao.getTotal();
+    }
+
+    /**
+     * 根据id修改计划
+     * @param plan
+     * @return
+     */
+    @Transactional
+    @Override
+    public Boolean updatePlanById(Plan plan) {
+        Boolean flage = false;
+        int a = planDao.updatePlanById(plan);
+        if(a>0){
+            flage = true;
+        }
+        return flage;
     }
 }

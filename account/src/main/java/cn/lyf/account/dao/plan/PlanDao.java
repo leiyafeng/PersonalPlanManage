@@ -24,4 +24,10 @@ public interface PlanDao {
      * @return
      */
     int getTotal();
+
+    /**
+     * 根据id更新计划
+     * @return
+     */
+    int updatePlanById(Plan plan);
 }

@@ -20,11 +20,11 @@ public class Plan {
     private Integer planPriority;
     private String planDescription;
     /**
-     * 计划提前完成时间
+     * 计划提前完成时间/天
      */
     private Integer planAheadTime;
     /**
-     * 计划延迟完成时间
+     * 计划延迟完成时间/天
      */
     private Integer planDelayTime;
     /**

@@ -20,9 +20,9 @@
     <!--插入计划 -->
     <insert id="insertPlan" parameterType="cn.lyf.account.bean.Plan">
         INSERT into t_plan
-        (user_id,goal,plan_begain_time,plan_end_time,plan_priority,plan_description,plan_status)
+        (user_id,goal,plan_begain_time,plan_end_time,plan_priority,plan_description,plan_status,creat_time)
         VALUES
-        (#{userId},#{goal},#{planBegainTime},#{planEndTime},#{planPriority},#{planDescription},#{planStatus})
+        (#{userId},#{goal},#{planBegainTime},#{planEndTime},#{planPriority},#{planDescription},#{planStatus},#{creatTime})
     </insert>
 
     <!-- 分页查询计划列表-->
@@ -31,9 +31,38 @@
         select * from t_plan limit #{start},#{end};
 
     </select>
+    <!--查询计划总条数-->
     <select id="getTotal" resultType="Integer">
         SELECT count(0)
         from
         t_plan
     </select>
+    <!--修改计划-->
+    <update id="updatePlanById" parameterType="cn.lyf.account.bean.Plan" >
+            update t_plan
+            <set >
+                <if test="goal != null" >
+                    goal = #{goal,jdbcType=VARCHAR},
+                </if>
+                <if test="planPriority != null" >
+                    plan_priority = #{planPriority,jdbcType=INTEGER},
+                </if>
+                <if test="planBegainTime != null" >
+                    plan_begain_time = #{planBegainTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="planEndTime != null" >
+                    plan_end_time = #{planEndTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="planStatus != null" >
+                    plan_status = #{planStatus,jdbcType=INTEGER},
+                </if>
+                <if test="planAheadTime != null" >
+                    plan_ahead_time = #{planAheadTime,jdbcType=INTEGER},
+                </if>
+                <if test="planDelayTime != null" >
+                    plan_delay_time = #{planDelayTime,jdbcType=INTEGER},
+                </if>
+            </set>
+            where id = #{id,jdbcType=INTEGER}
+    </update>
 </mapper>
