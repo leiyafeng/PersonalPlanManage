@@ -169,7 +169,7 @@ public class PlanController {
             log.error("修改计划异常",e);
             ajaxResponseDTO.setMsg("不好啦，粗大问题啦，修改失败啦，请稍后再来修改吧");
         }
-
+        log.info("修改计划结束，修改结果是："+JSONObject.toJSONString(ajaxResponseDTO));
         return JSONObject.toJSONString(ajaxResponseDTO);
 
     }

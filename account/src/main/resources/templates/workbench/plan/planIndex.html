@@ -6,7 +6,7 @@
 <link th:href="@{/jquery/bootstrap_3.3.0/css/bootstrap.min.css}" type="text/css" rel="stylesheet" />
 <link th:href="@{/jquery/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.min.css}" type="text/css" rel="stylesheet" />
 <link th:href="@{/jquery/bootstrap-table/css/bootstrap-table.min.css}" type="text/css" rel="stylesheet" />
-<link th:href="@{/bootstrap-dialog/css/bootstrap-dialog.css}" type="text/css" rel="stylesheet" />
+<link th:href="@{/xcConfirm/css/xcConfirm.css}" type="text/css" rel="stylesheet" />
 
 <script type="text/javascript" th:src="@{/jquery/jquery-2.2.3.min.js}"></script>
 <script type="text/javascript" th:src="@{/jquery/bootstrap_3.3.0/js/bootstrap.min.js}"></script>
@@ -14,7 +14,8 @@
 <script type="text/javascript" th:src="@{/jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js}"></script>
 <script type="text/javascript" th:src="@{/jquery/bootstrap-table/js/bootstrap-table.min.js}"></script>
 <script type="text/javascript" th:src="@{/jquery/bootstrap-table/js/bootstrap-table-zh-CN.js}"></script>
-<script type="text/javascript" th:src="@{/bootstrap-dialog/js/bootstrap-dialog.js}"></script>
+<script type="text/javascript" th:src="@{/xcConfirm/js/jquery-confirm-1.9.1.js}"></script>
+<script type="text/javascript" th:src="@{/xcConfirm/js/xcConfirm.js}"></script>
 
 <script type="text/javascript">
 
@@ -219,7 +220,7 @@
         return oTableInit;
     };
 
-    /** 刷新页面 */
+    /** 刷新列表 */
     function refresh() {
         $('#table').bootstrapTable('refresh');
     }
@@ -245,41 +246,43 @@
 			success:function (ajaxData) {
 				if(1==ajaxData.code){
                     //创建成功
-                    $("#alertText").html("<h4>"+ajaxData.msg+"</h4>");
-                    $("#alertModal").modal('show');
+                    var txt= "<h4>"+ajaxData.msg+"</h4>";
+                    window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.success);
                     //刷新
                     $("#goal").val("");
                     $("#planPriority").val("");
                     $("#create-startTime").val("");
                     $("#create-endTime").val("");
                     $("#create-describe").val("");
+                    //刷新列表
+                    refresh();
 				}else {
                     //创建失败
                     $("#createPlanModal").modal('show');
-                    $("#alertText").html("<h4>"+ajaxData.msg+"</h4>");
-                    $("#alertModal").modal('show');
-                    //alert(ajaxData.msg)
+                    var txt=  "<h4>"+ajaxData.msg+"</h4>";
+                    window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.error);
                 }
             },
 			error:function () {
-                $("#alertText").html("<h4>系统暂时忙不过来啦，<br>请稍后再试！</h4>");
-                $("#alertModal").modal('show');
+                var txt= "<h4>系统暂时忙不过来啦，<br>请稍后再试！</h4>";
+                window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.error);
             }
 		})
     }
 	//3.修改计划
 	function editPlan(){
         var plan= $('#table').bootstrapTable('getSelections');
-        //判断是否为已过期计划，过期计划不能修改
-		var d = new Date();
-        var today = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
-        var endTime = changeDateFormat(plan[0].planBegainTime);
-		if(today>endTime){
-			alert('该计划已经结束不能修改');
-			return;
-		}
+
         //3.1展示当前计划字段值
         if(plan.length==1){
+            //判断是否为已过期计划，过期计划不能修改
+            var d = new Date();
+            var today = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+            var endTime = changeDateFormat(plan[0].planEndTime);
+            if(today>endTime){
+                alert('该计划已经结束不能修改');
+                return;
+            }
 			$("#editGoal").val(plan[0].goal);
 			var planPriority = plan[0].planPriority;
 			if(planPriority == 1){
@@ -296,12 +299,10 @@
 			$("#edit-describe").val(plan[0].planDescription);
             $("#editPlanModal").modal('show');
         }else if(plan.length>1){
-            //BootstrapDialog.alert('I want banana!');
-            $("#alertText").html("<h4>亲，不能同时修改多条计划哦，<br>请选择其中一条计划进行修改啦!</h4>");
-            $("#alertModal").modal('show');
+            window.wxc.xcConfirm("<h4>亲，不能同时修改多条计划哦，<br>请选择其中一条计划进行修改啦!</h4>",window.wxc.xcConfirm.typeEnum.error);
         }else{
-            $("#alertText").html("<h4>亲，请先选择一条需要修改的计划啦！</h4>");
-            $("#alertModal").modal('show');
+            var txt = "<h4>亲，请先选择一条需要修改的计划啦！</h4>";
+            window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
 		}
 
 
@@ -309,47 +310,56 @@
 	//4.确认修改计划
     function updatePlan(){
         //确认修改计划吗？
-
-        var plan= $('#table').bootstrapTable('getSelections');
-        //4.1 获取修改后的值
-        var data = {
-            id:plan[0].id,
-            goal:$("#editGoal").val(),
-            planPriority:$("#editplanPriority").val(),
-            planBegainTime:$("#edit-startTime").val(),
-            planEndTime:$("#edit-endTime").val(),
-            planDescription:$("#edit-describe").val()
-        };
-
-        //4.2 ajax调用后台
-        $.ajax({
-            url:'/plan/modifyPlan',
-            type:'post',
-            data:JSON.stringify(data),
-            dataType:'json',
-            contentType:'application/json',
-            success:function(ajaxData){
-                if(1==ajaxData.code){
-                    //修改成功
-                    $("#alertText").html("<h4>"+ajaxData.msg+"</h4>");
-                    $("#alertModal").modal('show');
-                    $("#editPlanModal").modal('hide');
-                    refresh();
-                }else {
-                    //修改失败
-                    $("#createPlanModal").modal('show');
-                    $("#alertText").html("<h4>"+ajaxData.msg+"</h4>");
-                    $("#alertModal").modal('show');
-                    editPlan();
-                }
-            },
-            error:function () {
-                $("#alertText").html("<h4>系统暂时忙不过来啦，<br>请稍后再试啦！</h4>");
-                $("#alertModal").modal('show');
+        var txt=  "确认修改计划吗？";
+        var options = {
+			title:'提示',
+            btn:parseInt("0011",2),
+            onOk:function(){
+			    //确认修改
+                var plan= $('#table').bootstrapTable('getSelections');
+                //4.1 获取修改后的值
+                var data = {
+                    id:plan[0].id,
+                    goal:$("#editGoal").val(),
+                    planPriority:$("#editplanPriority").val(),
+                    planBegainTime:$("#edit-startTime").val(),
+                    planEndTime:$("#edit-endTime").val(),
+                    planDescription:$("#edit-describe").val()
+                };
+                //4.2 ajax调用后台
+                $.ajax({
+                    url:'/plan/modifyPlan',
+                    type:'post',
+                    data:JSON.stringify(data),
+                    dataType:'json',
+                    contentType:'application/json',
+                    success:function(ajaxData){
+                        if(1==ajaxData.code){
+                            //修改成功
+                            var txt=  "<h4>"+ajaxData.msg+"</h4>";
+                            window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.success);
+                            $("#editPlanModal").modal('hide');
+                            refresh();
+                        }else {
+                            //修改失败
+                            $("#createPlanModal").modal('show');
+                            var txt=  "<h4>"+ajaxData.msg+"</h4>";
+                            window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.error);
+                            editPlan();
+                        }
+                    },
+                    error:function () {
+                        var txt=  "<h4>系统暂时忙不过来啦，<br>请稍后再试啦！</h4>";
+                        window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.error);
+                    }
+                })
+			},
+            onCancel:function () {
+                $("#editPlanModal").modal('show');
+                return;
             }
-
-
-        })
+		}
+        window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.confirm,options);
 	}
     //转换日期格式(时间戳转换为datetime格式)
     function changeDateFormat(cellval) {
@@ -446,11 +456,11 @@
 					<form class="form-horizontal" role="form">
 					
 						<div class="form-group">
-							<label for="editGoal" class="col-sm-2 control-label">计划名称</label>
+							<label for="editGoal" class="col-sm-2 control-label">计划名称<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
                                 <input type="text" class="form-control" id="editGoal" value="">
 							</div>
-							<label for="editplanPriority" class="col-sm-2 control-label">优先级</label>
+							<label for="editplanPriority" class="col-sm-2 control-label">优先级<span style="font-size: 15px; color: red;">*</span></label>
 							<div class="col-sm-10" style="width: 300px;">
 								<select class="form-control" id="editplanPriority">
 								  <option></option>
@@ -487,27 +497,6 @@
 				<div class="modal-footer">
 					<button type="button" class="btn btn-primary" data-dismiss="modal" id="updatePlan" onclick="updatePlan()" >更新</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!--模态弹框 -->
-	<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-						&times;
-					</button>
-
-				</div>
-				<div class="modal-body" align="center" id="alertText">
-				<!--弹框的提示信息 -->
-				</div>
-				<div class="modal-footer">
-					<button  type="button" class="btn btn-default" data-dismiss="modal">关闭
-					</button>
-
 				</div>
 			</div>
 		</div>
