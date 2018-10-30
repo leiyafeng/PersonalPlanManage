@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" style="background: #a6e1ec">
 <head>
 <meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -13,6 +13,10 @@
 <script type="text/javascript" th:src="@{/jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js}"></script>
 <script type="text/javascript" th:src="@{/jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js}"></script>
 <script type="text/javascript" th:src="@{/jquery/bootstrap-table/js/bootstrap-table.min.js}"></script>
+<script type="text/javascript" th:src="@{/jquery/bootstrap-table/js/bootstrap-table-export.min.js}"></script>
+<script type="text/javascript" th:src="@{/jquery/bootstrap-table/js/tableExport.min.js}"></script>
+<script type="text/javascript" th:src="@{/jquery/bootstrap-table/js/xlsx.core.min.js}"></script>
+<script type="text/javascript" th:src="@{/jquery/bootstrap-table/js/FileSaver.min.js}"></script>
 <script type="text/javascript" th:src="@{/jquery/bootstrap-table/js/bootstrap-table-zh-CN.js}"></script>
 <script type="text/javascript" th:src="@{/xcConfirm/js/xcConfirm.js}"></script>
 
@@ -75,39 +79,52 @@
         //初始化Table
         oTableInit.Init = function () {
             $('#table').bootstrapTable({
-                url: '/plan/queryPlanList',         //请求后台的URL（*）
-                method: 'get',                      //请求方式（*）
-                toolbar: '#toolbar',                //工具按钮用哪个容器
+                url: '/plan/queryPlanList', //请求后台的URL（*）
+                method: 'get',  //请求方式（*）
+                toolbar: '#tableToolbar', //工具按钮用哪个容器
 				dataType:'json',
-                striped: true,                      //是否显示行间隔色
-                cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
-                pagination: true,                   //是否显示分页（*）
-                sortable: false,                     //是否启用排序
+                striped: true,  //是否显示行间隔色
+                cache: false,    //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                pagination: true, //是否显示分页（*）
+                sortable: false,  //是否启用排序
                 //sortName:"id",
-                //sortOrder: "desc",                   //排序方式
+                //sortOrder: "desc",  //排序方式
                 queryParams: oTableInit.queryParams,//传递参数（*）
                 queryParamsType: 'limit',
-                sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
-                pageNumber:1,                       //初始化加载第一页，默认第一页
-                pageSize: 5,                       //每页的记录行数（*）
-                pageList: [5, 10, 15, 30],        //可供选择的每页的行数（*）
+                sidePagination: "server", //分页方式：client客户端分页，server服务端分页（*）
+                pageNumber:1, //初始化加载第一页，默认第一页
+                pageSize: 5,    //每页的记录行数（*）
+                pageList: [5, 10, 15, 30], //可供选择的每页的行数（*）
                 smartDisplay:false,
-                search: false,                       //是否显示表格搜索
+                search: false,  //是否显示表格搜索
                 strictSearch: true,
                 searchAlign:'left',
                 buttonsAlign:'left',//指定按钮位置左或者右
-                showColumns: true,                  //是否显示所有的列
-                showRefresh: true,                  //是否显示刷新按钮
-                minimumCountColumns: 2,             //最少允许的列数
-                clickToSelect: true,                //是否启用点击选中行
-                //height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
-                uniqueId: "id",                     //每一行的唯一标识，一般为主键列
-                showToggle:false,                    //是否显示详细视图和列表视图的切换按钮
-                cardView: false,                    //是否显示详细视图
-                detailView: false,                   //是否显示父子表
+                showColumns: true, //是否显示所有的列
+                showRefresh: true, //是否显示刷新按钮
+                minimumCountColumns: 2, //最少允许的列数
+                clickToSelect: true,//是否启用点击选中行
+                //height: 500,  //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+                uniqueId: "id", //每一行的唯一标识，一般为主键列
+                showToggle:false, //是否显示详细视图和列表视图的切换按钮
+                cardView: false, //是否显示详细视图
+                detailView: false, //是否显示父子表
                 contentType: "application/x-www-form-urlencoded", //解决POST提交问题
                 responseHandler:function (res) {
                     return res;
+                },
+                showExport: true,  //是否显示导出按钮
+                buttonsAlign:"left",  //按钮位置
+                exportTypes:['excel','xlsx'],  //导出文件类型
+                //exportButton: $('#btn_export'),
+                Icons:'glyphicon-export',
+                exportOptions:{
+                    ignoreColumn: [0],  //忽略某一列的索引
+                    fileName: '计划列表',  //文件名称设置
+                    worksheetName: 'sheet1',  //表格工作区名称
+                    tableName: '计划列表',
+                    excelstyles: ['background-color', 'color', 'font-size', 'font-weight'],
+                    onMsoNumberFormat: DoOnMsoNumberFormat
                 },
                 columns: [
                     {	checkbox: true,
@@ -189,19 +206,8 @@
 					    title:'计划描述',
 						field:'planDescription',
 						width:200
-					},
-                    {
-                        title: '操作',
-                        field: 'id',
-                        align: 'center',
-                        formatter:function(value,row,index){
-                            var e = '<a href="#" mce_href="#" onclick="edit(\''+ row.id + '\')">编辑</a> ';
-                            var d = '<a href="#" mce_href="#" onclick="del(\''+ row.id +'\')">删除</a> ';
-                            return e+d;
-                        },
-                        width:50
-                    }
-                    ]
+					}
+				]
             });
         };
 
@@ -282,6 +288,12 @@
                 window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
                 return;
             }
+            //判断是否为废弃计划，废弃计划不能修改
+			if(plan[0].planStatus == 4){
+                var txt = "<h4 style='color:indianred'>亲，该计划已经废弃了不能修改啦！</h4>";
+                window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
+                return;
+			}
 			$("#editGoal").val(plan[0].goal);
 			var planPriority = plan[0].planPriority;
 			if(planPriority == 1){
@@ -311,7 +323,7 @@
         //判断结束时间是否小于当前时间
         var d = new Date();
         var today = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
-        var endTime = changeDateFormat($("#edit-endTime").val());
+        var endTime = $("#edit-endTime").val();
         var options = {
             title:'提示',
             btn:parseInt("0011",2),
@@ -361,6 +373,7 @@
             }
         }
         if(today>endTime){
+            //alert(endTime+"---"+$("#edit-endTime").val());
             var txt1 = "<h4 style='color:indianred'>修改后的结束时间已过期，修改后该计划状态就变成已结束计划！</h4>";
             window.wxc.xcConfirm(txt1, window.wxc.xcConfirm.typeEnum.confirm,options);
             return;
@@ -437,9 +450,15 @@
             return date.getFullYear() + "-" + month + "-" + currentDate ;/*+ " " + hours + ":" + minutes + ":" + seconds;*/
         }
     }
+    function DoOnMsoNumberFormat(cell, row, col) {
+        var result = "";
+        if (row > 0 && col == 0)
+            result = "\\@";
+        return result;
+    }
 </script>
 </head>
-<body>
+<body style="background: #a6e1ec">
 
 	<!-- 创建计划的模态窗口 -->
 	<div class="modal fade" id="createPlanModal" role="dialog">
@@ -564,56 +583,48 @@
 	</div>
 
 	<!-- 计划管理body-->
-	<div>
+	<div style="background: #a6e1ec">
 		<div style="position: relative; left: 10px; top: -10px;">
 			<div class="page-header">
 				<h3>计划管理</h3>
 			</div>
 		</div>
 	</div>
-	<div style="position: relative; top: -20px; left: 0px; width: 100%; height: 100%;">
-		<div style="width: 130%; position: absolute;top: 5px; left: 10px;">
-			<div class="btn-toolbar" role="toolbar" style="background-color: #F7F7F7; height: 50px; position: relative;top: 5px;">
+	<div style="position: relative; top: -20px; left: 0px; width: 100%; height: 100%;background: #a6e1ec">
+		<div style="width: 100%; position: absolute;top: 5px; left: 10px;">
+			<div class="btn-toolbar" role="toolbar" style="background-color: #a6e1ec; height: 50px; position: relative;top: 5px;" >
 				<div class="btn-group" style="position: relative; top: 18%;">
 				  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createPlanModal">
 					  <span class="glyphicon glyphicon-plus"></span> 创建计划</button>
-				  <button type="button" class="btn btn-default" data-toggle="modal"  id="eidtPlanButton" onclick="editPlan()">
+				  <button type="button" class="btn btn-default" data-toggle="modal" style="background: #2aabd2"  id="eidtPlanButton" onclick="editPlan()">
 					  <span class="glyphicon glyphicon-pencil"></span> 修改计划</button>
 				  <button type="button" class="btn btn-danger" onclick="giveUp()"><span class="glyphicon glyphicon-minus"></span> 废弃计划</button>
 				</div>
-				<div class="btn-group" style="position: relative; top: 18%;">
-				  <!--<button type="button" class="btn btn-default" data-toggle="modal" data-target="#importActivityModal"><span class="glyphicon glyphicon-import"></span> 导入</button>-->
-				  <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-export"></span> 导出计划</button>
-				</div>
+				<!--<div class="btn-group" style="position: relative; top: 18%;" >
+				  &lt;!&ndash;<button type="button" class="btn btn-default" data-toggle="modal" data-target="#importActivityModal"><span class="glyphicon glyphicon-import"></span> 导入</button>&ndash;&gt;
+				  <button type="button" style="background: #00B83F" class="btn btn-default" id="btn_export"><span class="glyphicon glyphicon-export"></span> 导出计划</button>
+				</div>-->
 			</div>
 
-			<div class="btn-toolbar"  role="toolbar" style="height: 80px;">
+			<div class="btn-toolbar"  role="toolbar" style="height: 80px;" >
 				<form class="form-inline" role="form" style="position: relative;top: 8%; left: 5px;">
-
 					<div class="form-group">
-						<div class="input-group">
-							<div class="input-group-addon">计划名称</div>
-							<input class="form-control" type="text">
+						<div class="input-group" style="width: 18%;height: 30%;">
+							<div class="input-group-addon" style="background: #7EC4CC">计划名称</div>
+							<input class="form-control" style="background: #d9edf7" type="text"  onblur="this.value=this.value.trim()">
 						</div>
-					</div>
-
-
-					<div class="form-group">
 						<div class="input-group">
-							<div class="input-group-addon">优先级</div>
-							<select class="form-control">
+							<div class="input-group-addon" style="background: #00B83F">优先级</div>
+							<select class="form-control" style="background: #d9edf7">
 								<option></option>
 								<option>非紧急</option>
 								<option>普通</option>
 								<option>紧急</option>
 							</select>
 						</div>
-					</div>
-
-					<div class="form-group">
 						<div class="input-group">
-							<div class="input-group-addon">状态</div>
-							<select class="form-control">
+							<div class="input-group-addon" style="background: #7EC4CC">状态</div>
+							<select class="form-control" style="background: #d9edf7">
 								<option></option>
 								<option>新建</option>
 								<option>进行中</option>
@@ -621,27 +632,24 @@
 								<option>已完成</option>
 							</select>
 						</div>
-					</div>
-					<br>
-					<div class="form-group">
-						<div class="input-group">
-							<div class="input-group-addon" >开始日期</div>
+						<div class="input-group" style="width: 16%;height: 30%;">
+							<div class="input-group-addon" style="background: #00B83F">开始日期</div>
 							<input class="form-control date" type="text" id="startTime" readonly/>
 						</div>
-					</div>
-					<div class="form-group">
-						<div class="input-group">
-							<div class="input-group-addon">结束日期</div>
+						<div class="input-group" style="width: 16%;height: 30%;">
+							<div class="input-group-addon" style="background: #7EC4CC">结束日期</div>
 							<input class="form-control date" type="text" id="endTime" readonly />
 						</div>
+						<div class="input-group" >
+							<button type="submit" class="btn btn-default" style="background: #2aabd2">查询</button>
+						</div>
 					</div>
-					<button type="submit" class="btn btn-default">查询</button>
-
 				</form>
+				<table  class="table table-hover" id="table" style="table-layout: fixed;background: #d9edf7 " >
+				</table>
 			</div>
 			<div style="position: relative;top: 10px;">
-				<table class="table table-hover" id="table" style="table-layout: fixed; " >
-				</table>
+
 			</div>
 		</div>
 		
