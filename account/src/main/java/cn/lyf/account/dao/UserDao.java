@@ -1,6 +1,6 @@
 package cn.lyf.account.dao;
 
-import cn.lyf.account.bean.User;
+import cn.lyf.account.po.User;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

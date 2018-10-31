@@ -1,6 +1,7 @@
 package cn.lyf.account.dao.plan;
 
-import cn.lyf.account.bean.Plan;
+import cn.lyf.account.dto.QueryPlanListDTO;
+import cn.lyf.account.po.Plan;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ public interface PlanDao {
      * 获取列表总条数
      * @return
      */
-    int getTotal(Plan plan);
+    int getTotal(QueryPlanListDTO queryPlanListDTO);
 
     /**
      * 根据id更新计划
@@ -33,8 +34,8 @@ public interface PlanDao {
 
     /**
      * 根据条件查询计划
-     * @param plan
+     * @param queryPlanListDTO
      * @return
      */
-    List<Plan> queryPlanByOptions(Map<String,Object> map);
+    List<Plan> queryPlanByOptions(QueryPlanListDTO queryPlanListDTO);
 }

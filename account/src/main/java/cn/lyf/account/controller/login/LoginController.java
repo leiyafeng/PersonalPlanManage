@@ -1,10 +1,9 @@
 package cn.lyf.account.controller.login;
 
 
-import cn.lyf.account.bean.User;
 import cn.lyf.account.interceptor.Auth;
+import cn.lyf.account.po.User;
 import cn.lyf.account.service.UserService;
-import cn.lyf.account.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;

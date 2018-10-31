@@ -1,6 +1,6 @@
 package cn.lyf.account.service.impl;
 
-import cn.lyf.account.bean.User;
+import cn.lyf.account.po.User;
 import cn.lyf.account.dao.UserDao;
 import cn.lyf.account.service.UserService;
 import org.springframework.stereotype.Service;

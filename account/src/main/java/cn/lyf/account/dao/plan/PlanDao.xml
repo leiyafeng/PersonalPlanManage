@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.lyf.account.dao.plan.PlanDao" >
 
-    <resultMap id="planMap" type="cn.lyf.account.bean.Plan">
+    <resultMap id="planMap" type="cn.lyf.account.po.Plan">
         <id column="id" property="id" jdbcType="INTEGER" />
         <result column="user_id" property="userId" jdbcType="INTEGER" />
         <result column="goal" property="goal" jdbcType="VARCHAR" />
@@ -16,9 +16,12 @@
         <result column="creat_time" property="creatTime" jdbcType="TIMESTAMP" />
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
     </resultMap>
+    <sql id="base_column">
+        id,user_id,goal,plan_begain_time,plan_end_time,plan_priority,plan_description,plan_ahead_time,plan_delay_time,plan_status,creat_time,update_time
+    </sql>
 
     <!--插入计划 -->
-    <insert id="insertPlan" parameterType="cn.lyf.account.bean.Plan">
+    <insert id="insertPlan" parameterType="cn.lyf.account.po.Plan">
         INSERT into t_plan
         (user_id,goal,plan_begain_time,plan_end_time,plan_priority,plan_description,plan_status,creat_time)
         VALUES
@@ -28,11 +31,13 @@
     <!-- 分页查询计划列表-->
     <select id="findAllPlanByPage" resultMap="planMap"  parameterType="HashMap">
 
-        select * from t_plan where user_id = #{userId} limit #{start},#{end};
+        select
+         <include refid="base_column"/>
+         from t_plan where user_id = #{userId} limit #{start},#{end};
 
     </select>
     <!--查询计划总条数-->
-    <select id="getTotal" resultType="Integer" parameterType="cn.lyf.account.bean.Plan">
+    <select id="getTotal1" resultType="Integer" parameterType="cn.lyf.account.po.Plan">
         SELECT count(0)
         from
         t_plan where user_id=#{userId}
@@ -47,7 +52,7 @@
         </if>
     </select>
     <!--修改计划-->
-    <update id="updatePlanById" parameterType="cn.lyf.account.bean.Plan" >
+    <update id="updatePlanById" parameterType="cn.lyf.account.po.Plan" >
             update t_plan
             <set >
                 <if test="goal != null" >
@@ -78,19 +83,54 @@
             where id = #{id,jdbcType=INTEGER}
     </update>
     <!--根据条件查询计划列表 -->
-    <select id="queryPlanByOptions" parameterType="HashMap" resultMap="planMap">
-        select * from t_plan
-        where
-        user_id= #{plan.userId}
-        <if test="plan.planPriority!=null">
-          and plan_priority = #{plan.planPriority,jdbcType=INTEGER}
-        </if>
-        <if test="plan.planStatus!=null">
-          and plan_status = #{plan.planStatus,jdbcType=INTEGER}
-        </if>
-        <if test="plan.goal!=null">
-            and goal LIKE CONCAT(CONCAT('%',#{plan.goal}),'%')
-        </if>
-        limit #{start},#{end};
+    <select id="queryPlanByOptions" parameterType="cn.lyf.account.dto.QueryPlanListDTO" resultMap="planMap" >
+        select
+          <include refid="base_column"/>
+        from t_plan
+        <where>
+            <if test="userId!=null">
+                user_id= #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="planPriority!=null">
+              and plan_priority = #{planPriority,jdbcType=INTEGER}
+            </if>
+            <if test="planStatus!=null">
+                AND plan_status = #{planStatus,jdbcType=INTEGER}
+            </if>
+            <if test="start1!=null">
+              and plan_begain_time &gt;= #{start1}
+            </if>
+            <if test="start2!=null">
+              and #{start2} &gt;= plan_begain_time
+            </if>
+            <if test="goal!=null and goal.length>0">
+                and goal LIKE CONCAT(CONCAT('%',#{goal,jdbcType=VARCHAR}),'%')
+            </if>
+        </where>
+        limit #{pageNumber,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER};
+    </select>
+    <!--根据条件查询计划总条数 -->
+    <select id="getTotal" parameterType="cn.lyf.account.dto.QueryPlanListDTO" resultType="Integer">
+        select count(0) from t_plan
+        <where>
+            <if test="userId!=null">
+                user_id= #{userId,jdbcType=INTEGER}
+            </if>
+            <if test="planPriority!=null">
+                and plan_priority = #{planPriority,jdbcType=INTEGER}
+            </if>
+            <if test="planStatus!=null">
+                AND plan_status = #{planStatus,jdbcType=INTEGER}
+            </if>
+            <if test="start1!=null">
+                and plan_begain_time &gt;= #{start1}
+            </if>
+            <if test="start2!=null">
+                and #{start2} &gt;= plan_begain_time
+            </if>
+            <if test="goal!=null and goal.length>0">
+                and goal LIKE CONCAT(CONCAT('%',#{goal,jdbcType=VARCHAR}),'%')
+            </if>
+        </where>
     </select>
 </mapper>

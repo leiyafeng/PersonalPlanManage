@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.lyf.account.dao.UserDao" >
 
-    <resultMap id="userMap" type="cn.lyf.account.bean.User">
+    <resultMap id="userMap" type="cn.lyf.account.po.User">
         <id column="id" property="id" jdbcType="INTEGER" />
         <result column="user_account" property="userAccount" jdbcType="VARCHAR" />
         <result column="user_name" property="userName" jdbcType="VARCHAR" />
@@ -14,7 +14,7 @@
 
 
     <!--查询用户 -->
-    <select id="findUserByUser" resultMap="userMap" parameterType="cn.lyf.account.bean.User">
+    <select id="findUserByUser" resultMap="userMap" parameterType="cn.lyf.account.po.User">
         select *
         from t_user
         <where>
@@ -26,7 +26,7 @@
         </where>
     </select>
     <!--根据Id更新用户信息 -->
-    <update id="updateUserByUser" parameterType="cn.lyf.account.bean.User">
+    <update id="updateUserByUser" parameterType="cn.lyf.account.po.User">
         update t_user
         <trim prefix="set" suffixOverrides=",">
             <if test="userAccount != null and userAccount.length()>0" > user_account=#{userAccount}</if>

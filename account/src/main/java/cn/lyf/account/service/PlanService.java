@@ -1,6 +1,7 @@
 package cn.lyf.account.service;
 
-import cn.lyf.account.bean.Plan;
+import cn.lyf.account.dto.QueryPlanListDTO;
+import cn.lyf.account.po.Plan;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public interface PlanService {
      * 获取计划列表总条数
      * @return
      */
-    int getTotal(Plan plan);
+    int getTotal(QueryPlanListDTO queryPlanListDTOber);
 
     /**
      * 修改计划根据Id
@@ -38,8 +39,8 @@ public interface PlanService {
 
     /**
      * 根据条件查询计划列表
-     * @param plan
+     * @param queryPlanListDTOber
      * @return
      */
-    List<Plan> findPlanByOptions(Plan plan,Integer pageSize, Integer pageNumber);
+    List<Plan> findPlanByOptions(QueryPlanListDTO queryPlanListDTOber);
 }

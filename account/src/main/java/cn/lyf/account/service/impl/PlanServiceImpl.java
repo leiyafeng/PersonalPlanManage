@@ -1,6 +1,7 @@
 package cn.lyf.account.service.impl;
 
-import cn.lyf.account.bean.Plan;
+import cn.lyf.account.dto.QueryPlanListDTO;
+import cn.lyf.account.po.Plan;
 import cn.lyf.account.dao.plan.PlanDao;
 import cn.lyf.account.service.PlanService;
 import org.springframework.stereotype.Service;
@@ -47,8 +48,8 @@ public class PlanServiceImpl implements PlanService {
      * @return
      */
     @Override
-    public int getTotal(Plan plan) {
-        return planDao.getTotal(plan);
+    public int getTotal(QueryPlanListDTO queryPlanListDTOber) {
+        return planDao.getTotal(queryPlanListDTOber);
     }
 
     /**
@@ -69,16 +70,12 @@ public class PlanServiceImpl implements PlanService {
 
     /**
      * 根据条件查询计划列表
-     * @param plan
+     * @param queryPlanListDTO
      * @return
      */
     @Override
-    public List<Plan> findPlanByOptions(Plan plan,Integer pageSize, Integer pageNumber) {
-        Map<String,Object> map = new HashMap<>();
-        map.put("plan",plan);
-        map.put("start",pageNumber);
-        map.put("end",pageSize);
-        List<Plan> plans = planDao.queryPlanByOptions(map);
+    public List<Plan> findPlanByOptions(QueryPlanListDTO queryPlanListDTO) {
+        List<Plan> plans = planDao.queryPlanByOptions(queryPlanListDTO);
         return plans;
     }
 }

@@ -1,4 +1,4 @@
-package cn.lyf.account.bean;
+package cn.lyf.account.po;
 
 import lombok.Data;
 

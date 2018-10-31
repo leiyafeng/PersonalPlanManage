@@ -1,6 +1,7 @@
 package cn.lyf.account.service;
 
-import cn.lyf.account.bean.User;
+
+import cn.lyf.account.po.User;
 
 import java.util.Date;
 

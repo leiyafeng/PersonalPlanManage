@@ -11,6 +11,7 @@ public class DateUtils {
 
     public static final String  YYYY_MM_DD_HH_MM_SS="yyyy-MM-dd HH:mm:ss";
     public static final String  YYYYMMDD="yyyyMMdd";
+    public static final String  YYYY_MM_DD = "yyyy-MM-dd";
 
     /**
      * 获取现在时间
@@ -77,5 +78,9 @@ public class DateUtils {
 
     }
 
+    public static Date stringToDate(String str,String format) throws Exception{
+        SimpleDateFormat sdf = new SimpleDateFormat(format);
+        return sdf.parse(str);
+    }
 
 }

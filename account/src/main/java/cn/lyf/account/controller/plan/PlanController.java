@@ -1,9 +1,10 @@
 package cn.lyf.account.controller.plan;
 
-import cn.lyf.account.bean.Plan;
-import cn.lyf.account.bean.User;
 import cn.lyf.account.dto.AjaxResponseDTO;
+import cn.lyf.account.dto.QueryPlanListDTO;
 import cn.lyf.account.interceptor.Auth;
+import cn.lyf.account.po.Plan;
+import cn.lyf.account.po.User;
 import cn.lyf.account.service.PlanService;
 import cn.lyf.account.util.DateUtils;
 import com.alibaba.fastjson.JSON;
@@ -124,9 +125,11 @@ public class PlanController {
         List<Plan> planList = planService.findAllPlanByPage(pageSize,pageNumber,userId);
         log.info("分页查询计划列表结果是："+planList);
         //获取列表总条数
-        Plan p = new Plan();
-        p.setUserId(userId);
-        int total = planService.getTotal(p);
+        /*Plan p = new Plan();
+        p.setUserId(userId);*/
+        QueryPlanListDTO q = new QueryPlanListDTO();
+        q.setUserId(userId);
+        int total = planService.getTotal(q);
         Map<String,Object> map = new HashMap<>();
         map.put("total",total);
         map.put("rows",planList);
@@ -227,12 +230,14 @@ public class PlanController {
         return JSONObject.toJSONString(ajaxResponseDTO);
     }
 
-    @RequestMapping("/queryPlanByOptions")
+    /*@RequestMapping("/queryPlanByOptions")
     @ResponseBody
-    public String queryPlanByOptions(String goal,Integer planPriority,Integer planStatus,
-                                     Integer pageSize, Integer pageNumber, HttpServletRequest request){
-        log.info("进入根据条件查询计划controller，获取到的参数是【goal="+goal+",planPriority="+planPriority+",planStatus="+
-                planStatus+"pagesize="+pageSize+"pageNumber="+pageNumber+"】");
+    public String queryPlanByOptions(@RequestBody QueryPlanListDTO queryPlanListDTO,String str, HttpServletRequest request){
+        log.info("条件查询controller接收参数queryPlanListDTO="+queryPlanListDTO+"---------str="+str);
+        log.info("进入根据条件查询计划controller，获取到的参数是【goal="+ queryPlanListDTO.getGoal()+",planPriority="+
+                queryPlanListDTO.getPlanPriority()+",planStatus="+ queryPlanListDTO.getPlanStatus()+"pagesize="+ queryPlanListDTO.getPageSize()+"pageNumber="+
+                queryPlanListDTO.getPageNumber()+",start1="+ queryPlanListDTO.getStart1()+"】");
+
         User user = (User) request.getSession().getAttribute(USER_SESSION_KEY);
         Map<String,Object> map = new HashMap<>();
         List<Plan> plans = new ArrayList<>();
@@ -240,11 +245,11 @@ public class PlanController {
             Integer userId = user.getId();
             Plan p = new Plan();
             p.setUserId(userId);
-            p.setGoal(goal);
-            p.setPlanPriority(planPriority);
-            p.setPlanStatus(planStatus);
+            p.setGoal(queryPlanListDTO.getGoal());
+            p.setPlanPriority(queryPlanListDTO.getPlanPriority());
+            p.setPlanStatus(queryPlanListDTO.getPlanStatus());
             //查询计划列表
-            plans =  planService.findPlanByOptions(p,pageSize,pageNumber);
+            plans =  planService.findPlanByOptions(p, queryPlanListDTO.getPageSize(), queryPlanListDTO.getPageNumber());
             //查询计划条数
             int total = planService.getTotal(p);
             map.put("total",total);
@@ -255,6 +260,58 @@ public class PlanController {
             log.error("根据条件查询计划异常",e);
         }
         log.info("查询结果是："+JSON.toJSONString(plans));
+        return  JSON.toJSONString(map);
+    }*/
+
+    @RequestMapping("/queryPlanByOptions")
+    @ResponseBody
+    public String queryPlanByOptions(Integer pageSize,Integer pageNumber,String goal,Integer planPriority,Integer planStatus,
+                                     String start1,String start2,String end1,String end2, HttpServletRequest request){
+        log.info("条件查询controller接收参数---------pageSize="+pageSize+"---pagenumber="+pageNumber+"--goal="+goal+"---planPriority"+planPriority+
+        "----planStatus="+planStatus+"----start1="+start1+"-----start2="+start2+"----end1="+end1+"---end2="+end2);
+        User user = (User) request.getSession().getAttribute(USER_SESSION_KEY);
+        Map<String,Object> map = new HashMap<>();
+        Map<String,Object> resultMap = new HashMap<>();
+        List<Plan> plans = new ArrayList<>();
+        AjaxResponseDTO ajaxResponseDTO = new AjaxResponseDTO();
+        try{
+            Integer userId = user.getId();
+            QueryPlanListDTO q = new QueryPlanListDTO();
+            q.setUserId(userId);
+            q.setPageSize(pageSize);
+            q.setPageNumber(pageNumber);
+            if(!StringUtils.isBlank(start1)){
+                q.setStart1(DateUtils.stringToDate(start1,DateUtils.YYYY_MM_DD));
+            }
+            if(!StringUtils.isBlank(start2)){
+                q.setStart2(DateUtils.stringToDate(start2,DateUtils.YYYY_MM_DD));
+            }
+            if(!StringUtils.isBlank(end1)){
+                q.setEnd1(DateUtils.stringToDate(end1,DateUtils.YYYY_MM_DD));
+            }
+            if(!StringUtils.isBlank(end2)){
+                q.setEnd2(DateUtils.stringToDate(end2,DateUtils.YYYY_MM_DD));
+            }
+            q.setGoal(goal);
+            q.setPlanPriority(planPriority);
+            q.setPlanStatus(planStatus);
+            Plan p = new Plan();
+            p.setUserId(userId);
+            p.setGoal(goal);
+            p.setPlanPriority(planPriority);
+            p.setPlanStatus(planStatus);
+            //查询计划列表
+            plans =  planService.findPlanByOptions(q);
+            //查询计划条数
+            int total = planService.getTotal(q);
+            map.put("total",total);
+            map.put("rows",plans);
+
+
+        }catch (Exception e){
+            log.error("根据条件查询计划异常",e);
+        }
+        log.info("查询结果是："+JSON.toJSONString(map));
         return  JSON.toJSONString(map);
     }
 
