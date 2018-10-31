@@ -23,11 +23,18 @@ public interface PlanDao {
      * 获取列表总条数
      * @return
      */
-    int getTotal(Map<String,Object> map);
+    int getTotal(Plan plan);
 
     /**
      * 根据id更新计划
      * @return
      */
     int updatePlanById(Plan plan);
+
+    /**
+     * 根据条件查询计划
+     * @param plan
+     * @return
+     */
+    List<Plan> queryPlanByOptions(Map<String,Object> map);
 }

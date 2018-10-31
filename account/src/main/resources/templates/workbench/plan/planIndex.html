@@ -96,7 +96,8 @@
                 pageSize: 5,    //每页的记录行数（*）
                 pageList: [5, 10, 15, 30], //可供选择的每页的行数（*）
                 smartDisplay:false,
-                search: false,  //是否显示表格搜索
+                showSearchButton: true, //显示搜索按钮
+                search: true,  //是否显示表格搜索
                 strictSearch: true,
                 searchAlign:'left',
                 buttonsAlign:'left',//指定按钮位置左或者右
@@ -135,10 +136,10 @@
                         field: 'goal',
                         align: 'center',
                         valign: 'middle',
-                        width:50
+                        width:40
                     },
                     {
-                        title: '计划优先级',
+                        title: '优先级',
                         field: 'planPriority',
                         align: 'center',
                         valign: 'middle',
@@ -159,7 +160,7 @@
                         title: '计划状态',
                         field: 'planStatus',
                         align: 'center',
-                        width: 50,
+                        width: 30,
                         formatter: function (value, row, index) {
                             switch (value) {
                                 case 1:
@@ -191,7 +192,7 @@
                         formatter: function (value, row, index) {
                             return changeDateFormat(value)
                         },
-                        width:50
+                        width:30
                     },
                     {
                         title: '结束日期',
@@ -200,12 +201,12 @@
                         formatter: function (value, row, index) {
                             return changeDateFormat(value)
                         },
-                        width:50
+                        width:30
                     },
 					{
 					    title:'计划描述',
 						field:'planDescription',
-						width:200
+						width:100
 					}
 				]
             });
@@ -218,7 +219,7 @@
                 pageNumber: params.offset, //页码
                 //sortName: params.sort,	//排序列名
                 //sortOrder:params.order,	//排序方式
-               searchText:params.search	//搜索框参数
+               //searchText:params.search	//搜索框参数
             };
             return temp;
         };
@@ -228,7 +229,7 @@
     /** 刷新列表 */
     function refresh() {
         $('#table').bootstrapTable('refresh');
-    }
+    };
 
 	//2.创建计划
 	function creatPlan() {
@@ -273,7 +274,7 @@
                 window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.error);
             }
 		})
-    }
+    };
 	//3.修改计划
 	function editPlan(){
         var plan= $('#table').bootstrapTable('getSelections');
@@ -317,7 +318,7 @@
 		}
 
 
-	}
+	};
 	//4.确认修改计划
     function updatePlan(){
         //判断结束时间是否小于当前时间
@@ -382,7 +383,7 @@
             var txt=  "<h3 style = 'color:orange'>确认修改计划吗？</h3>";
             window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.confirm,options);
 		}
-	}
+	};
 	//5. 废弃计划
 	function giveUp(){
         //5.1判断是否选中计划
@@ -434,7 +435,22 @@
             }
             window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.confirm,options);
 		}
-	}
+	};
+	//6. 查询计划
+	function query(){
+        var opt = {
+            url: "/plan/queryPlanByOptions",
+            silent: true, //静默刷新
+            query:{
+                //请求参数
+                pageSize: 5,   //页面大小
+                pageNumber: 1, //页码
+                goal:$("#queryPlanGoal").val(),
+                planPriority:$("#queryPlanPriority").val()
+            }
+        };
+        $("#table").bootstrapTable('refresh', opt);
+	};
     //转换日期格式(时间戳转换为datetime格式)
     function changeDateFormat(cellval) {
         var dateVal = cellval + "";
@@ -611,37 +627,49 @@
 					<div class="form-group">
 						<div class="input-group" style="width: 18%;height: 30%;">
 							<div class="input-group-addon" style="background: #7EC4CC">计划名称</div>
-							<input class="form-control" style="background: #d9edf7" type="text"  onblur="this.value=this.value.trim()">
+							<input id="queryPlanGoal" class="form-control" style="background: #d9edf7" type="text"  onblur="this.value=this.value.trim()">
 						</div>
 						<div class="input-group">
 							<div class="input-group-addon" style="background: #00B83F">优先级</div>
-							<select class="form-control" style="background: #d9edf7">
+							<select class="form-control" style="background: #d9edf7" id="queryPlanPriority">
 								<option></option>
-								<option>非紧急</option>
-								<option>普通</option>
-								<option>紧急</option>
+								<option value="1">非紧急</option>
+								<option value="2">普通</option>
+								<option value="3">紧急</option>
 							</select>
 						</div>
 						<div class="input-group">
 							<div class="input-group-addon" style="background: #7EC4CC">状态</div>
-							<select class="form-control" style="background: #d9edf7">
+							<select class="form-control" style="background: #d9edf7" id="queryPlanStatus">
 								<option></option>
-								<option>新建</option>
-								<option>进行中</option>
-								<option>延期</option>
-								<option>已完成</option>
+								<option value="6">新建</option>
+								<option value="2">进行中</option>
+								<option value="5">延期</option>
+								<option value="1">已完成</option>
 							</select>
 						</div>
-						<div class="input-group" style="width: 16%;height: 30%;">
-							<div class="input-group-addon" style="background: #00B83F">开始日期</div>
-							<input class="form-control date" type="text" id="startTime" readonly/>
+						<div class="input-group" style="width: 17%;height: 30%;">
+							<div class="input-group-addon" style="background: #00B83F">开始日期区间</div>
+							<input class="form-control date" type="text" id="startTime1" readonly/>
 						</div>
-						<div class="input-group" style="width: 16%;height: 30%;">
-							<div class="input-group-addon" style="background: #7EC4CC">结束日期</div>
-							<input class="form-control date" type="text" id="endTime" readonly />
+						<div class="input-group" style="width: 1%;height: 30%;" align="center" >
+							--
+						</div>
+						<div class="input-group" style="width: 8%;height: 30%;">
+							<input class="form-control date" type="text" id="startTime2" readonly/>
+						</div>
+						<div class="input-group" style="width: 17%;height: 30%;">
+							<div class="input-group-addon" style="background: #7EC4CC">结束日期区间</div>
+							<input class="form-control date" type="text" id="endTime1" readonly />
+						</div>
+						<div class="input-group" style="width: 1%;height: 30%;" align="center" >
+							--
+						</div>
+						<div class="input-group" style="width: 8%;height: 30%;">
+							<input class="form-control date" type="text" id="endTime2" readonly/>
 						</div>
 						<div class="input-group" >
-							<button type="submit" class="btn btn-default" style="background: #2aabd2">查询</button>
+							<button id="queryBtn" onclick="query()" type="button" class="btn btn-default" style="background: #2aabd2">查询</button>
 						</div>
 					</div>
 				</form>

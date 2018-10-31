@@ -32,10 +32,19 @@
 
     </select>
     <!--查询计划总条数-->
-    <select id="getTotal" resultType="Integer">
+    <select id="getTotal" resultType="Integer" parameterType="cn.lyf.account.bean.Plan">
         SELECT count(0)
         from
         t_plan where user_id=#{userId}
+        <if test="planPriority!=null">
+            and plan_priority = #{planPriority,jdbcType=INTEGER}
+        </if>
+        <if test="planStatus!=null">
+            and plan_status = #{planStatus,jdbcType=INTEGER}
+        </if>
+        <if test="goal!=null">
+            and goal LIKE CONCAT(CONCAT('%',#{goal}),'%')
+        </if>
     </select>
     <!--修改计划-->
     <update id="updatePlanById" parameterType="cn.lyf.account.bean.Plan" >
@@ -68,4 +77,20 @@
             </set>
             where id = #{id,jdbcType=INTEGER}
     </update>
+    <!--根据条件查询计划列表 -->
+    <select id="queryPlanByOptions" parameterType="HashMap" resultMap="planMap">
+        select * from t_plan
+        where
+        user_id= #{plan.userId}
+        <if test="plan.planPriority!=null">
+          and plan_priority = #{plan.planPriority,jdbcType=INTEGER}
+        </if>
+        <if test="plan.planStatus!=null">
+          and plan_status = #{plan.planStatus,jdbcType=INTEGER}
+        </if>
+        <if test="plan.goal!=null">
+            and goal LIKE CONCAT(CONCAT('%',#{plan.goal}),'%')
+        </if>
+        limit #{start},#{end};
+    </select>
 </mapper>

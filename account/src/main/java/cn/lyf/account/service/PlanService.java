@@ -26,7 +26,7 @@ public interface PlanService {
      * 获取计划列表总条数
      * @return
      */
-    int getTotal(Integer userId);
+    int getTotal(Plan plan);
 
     /**
      * 修改计划根据Id
@@ -35,4 +35,11 @@ public interface PlanService {
      */
     @Transactional
     Boolean updatePlanById(Plan plan);
+
+    /**
+     * 根据条件查询计划列表
+     * @param plan
+     * @return
+     */
+    List<Plan> findPlanByOptions(Plan plan,Integer pageSize, Integer pageNumber);
 }

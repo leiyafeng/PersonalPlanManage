@@ -47,10 +47,8 @@ public class PlanServiceImpl implements PlanService {
      * @return
      */
     @Override
-    public int getTotal(Integer userId) {
-        Map<String, Object > reqMap = new HashMap<>();
-        reqMap.put("userId",userId);
-        return planDao.getTotal(reqMap);
+    public int getTotal(Plan plan) {
+        return planDao.getTotal(plan);
     }
 
     /**
@@ -67,5 +65,20 @@ public class PlanServiceImpl implements PlanService {
             flage = true;
         }
         return flage;
+    }
+
+    /**
+     * 根据条件查询计划列表
+     * @param plan
+     * @return
+     */
+    @Override
+    public List<Plan> findPlanByOptions(Plan plan,Integer pageSize, Integer pageNumber) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("plan",plan);
+        map.put("start",pageNumber);
+        map.put("end",pageSize);
+        List<Plan> plans = planDao.queryPlanByOptions(map);
+        return plans;
     }
 }

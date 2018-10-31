@@ -18,10 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static cn.lyf.account.util.Constants.USER_SESSION_KEY;
 
@@ -127,7 +124,9 @@ public class PlanController {
         List<Plan> planList = planService.findAllPlanByPage(pageSize,pageNumber,userId);
         log.info("分页查询计划列表结果是："+planList);
         //获取列表总条数
-        int total = planService.getTotal(userId);
+        Plan p = new Plan();
+        p.setUserId(userId);
+        int total = planService.getTotal(p);
         Map<String,Object> map = new HashMap<>();
         map.put("total",total);
         map.put("rows",planList);
@@ -226,6 +225,37 @@ public class PlanController {
         }
         log.info("废弃计划结束，废弃结果是："+JSONObject.toJSONString(ajaxResponseDTO));
         return JSONObject.toJSONString(ajaxResponseDTO);
+    }
+
+    @RequestMapping("/queryPlanByOptions")
+    @ResponseBody
+    public String queryPlanByOptions(String goal,Integer planPriority,Integer planStatus,
+                                     Integer pageSize, Integer pageNumber, HttpServletRequest request){
+        log.info("进入根据条件查询计划controller，获取到的参数是【goal="+goal+",planPriority="+planPriority+",planStatus="+
+                planStatus+"pagesize="+pageSize+"pageNumber="+pageNumber+"】");
+        User user = (User) request.getSession().getAttribute(USER_SESSION_KEY);
+        Map<String,Object> map = new HashMap<>();
+        List<Plan> plans = new ArrayList<>();
+        try{
+            Integer userId = user.getId();
+            Plan p = new Plan();
+            p.setUserId(userId);
+            p.setGoal(goal);
+            p.setPlanPriority(planPriority);
+            p.setPlanStatus(planStatus);
+            //查询计划列表
+            plans =  planService.findPlanByOptions(p,pageSize,pageNumber);
+            //查询计划条数
+            int total = planService.getTotal(p);
+            map.put("total",total);
+            map.put("rows",plans);
+
+
+        }catch (Exception e){
+            log.error("根据条件查询计划异常",e);
+        }
+        log.info("查询结果是："+JSON.toJSONString(plans));
+        return  JSON.toJSONString(map);
     }
 
 }
