@@ -10,14 +10,15 @@
         <result column="plan_end_time" property="planEndTime" jdbcType="TIMESTAMP" />
         <result column="plan_priority" property="planPriority" jdbcType="INTEGER" />
         <result column="plan_description" property="planDescription" jdbcType="VARCHAR" />
-        <result column="plan_ahead_time" property="planAheadTime" jdbcType="INTEGER" />
-        <result column="plan_delay_time" property="planDelayTime" jdbcType="INTEGER" />
+        <result column="plan_delay_days" property="planDelayDays" jdbcType="INTEGER" />
         <result column="plan_status" property="planStatus" jdbcType="INTEGER" />
         <result column="creat_time" property="creatTime" jdbcType="TIMESTAMP" />
         <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="plan_delay_count" property="planDelayCount" jdbcType="INTEGER" />
     </resultMap>
     <sql id="base_column">
-        id,user_id,goal,plan_begain_time,plan_end_time,plan_priority,plan_description,plan_ahead_time,plan_delay_time,plan_status,creat_time,update_time
+        id,user_id,goal,plan_begain_time,plan_end_time,plan_priority,plan_description,
+        plan_delay_days,plan_status,creat_time,update_time,plan_delay_count
     </sql>
 
     <!--插入计划 -->
@@ -70,11 +71,8 @@
                 <if test="planStatus != null" >
                     plan_status = #{planStatus,jdbcType=INTEGER},
                 </if>
-                <if test="planAheadTime != null" >
-                    plan_ahead_time = #{planAheadTime,jdbcType=INTEGER},
-                </if>
-                <if test="planDelayTime != null" >
-                    plan_delay_time = #{planDelayTime,jdbcType=INTEGER},
+                <if test="planDelayDays != null" >
+                    plan_delay_days = #{planDelayDays,jdbcType=INTEGER},
                 </if>
                 <if test="planDescription != null" >
                     plan_description = #{planDescription,jdbcType=VARCHAR},

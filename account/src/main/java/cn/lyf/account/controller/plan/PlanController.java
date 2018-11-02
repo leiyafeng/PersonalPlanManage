@@ -60,51 +60,29 @@ public class PlanController {
         }else if(null == plan.getPlanPriority()){
             //1.1.2优先级为空
             ajaxResponseDTO.buildError("亲，请选择优先级啦！",null);
+        }else if(null == plan.getPlanBegainTime() || null == plan.getPlanBegainTime()){
+                //1.1.3 开始时间或结束时间为空
+            ajaxResponseDTO.buildError("亲，开始日期或预计结束日期不能为空啦！",null);
         }else{
-            if(null != plan.getPlanBegainTime() && null != plan.getPlanEndTime()){
-                //1.1.3开始时间都不为空时，开始时间不能大于结束时间
-                String begain = DateUtils.dateToString(plan.getPlanBegainTime(),DateUtils.YYYYMMDD);
-                String end = DateUtils.dateToString(plan.getPlanEndTime(),DateUtils.YYYYMMDD);
-                if(Integer.valueOf(begain)>Integer.valueOf(end)){
-                    ajaxResponseDTO.buildError("亲，计划开始时间不能大于结束时间哦",null);
-                }else{
-                    //2.1添加计划状态
-                    if(plan.getPlanBegainTime() != null){
-                        //进行中状态
-                        plan.setPlanStatus(2);
-                    }else{
-                        //未开始状态
-                        plan.setPlanStatus(6);
-                    }
-                    //2.2调service创建plan
-                    Boolean b = planService.creatPlan(plan);
-                    if(b){
-                        ajaxResponseDTO.buildSucess(null,"耶，创建计划成功啦！");
-                        log.info("创建计划成功");
-                    }else{
-                        ajaxResponseDTO.buildError("创建计划失败啦，请稍后再试下吧！",null);
-                        log.error("创建计划失败");
-                    }
-                }
+            Boolean bd = DateUtils.compareDate(plan.getPlanBegainTime(),new Date(),DateUtils.YYYYMMDD);
+            if(bd){
+                //开始日期大于当前日期
+                //未开始状态
+                plan.setPlanStatus(6);
             }else{
-                //2.1添加计划状态
-                if(plan.getPlanBegainTime() != null){
-                    //进行中状态
-                    plan.setPlanStatus(2);
-                }else{
-                    //未开始状态
-                    plan.setPlanStatus(6);
-                }
-                //2.2调service创建plan
-                Boolean b = planService.creatPlan(plan);
-                if(b){
-                    ajaxResponseDTO.buildSucess(null,"耶，创建计划成功啦！");
-                    log.info("创建计划成功");
-                }else{
-                    ajaxResponseDTO.buildError("创建计划失败啦，请稍后再试下吧！",null);
-                    log.error("创建计划失败");
-                }
+                //进行中状态
+                plan.setPlanStatus(2);
             }
+            //2.2调service创建plan
+            Boolean b = planService.creatPlan(plan);
+            if(b){
+                ajaxResponseDTO.buildSucess(null,"耶，创建计划成功啦！");
+                log.info("创建计划成功");
+            }else{
+                ajaxResponseDTO.buildError("创建计划失败啦，请稍后再试下吧！",null);
+                log.error("创建计划失败");
+            }
+
         }
         String json = JSONObject.toJSONString(ajaxResponseDTO);
         return json;
@@ -116,6 +94,7 @@ public class PlanController {
      * @param pageNumber
      * @return
      */
+    @Deprecated
     @RequestMapping("/queryPlanList")
     @ResponseBody
     public String queryPlanList(Integer pageSize, Integer pageNumber,HttpServletRequest request){
@@ -136,6 +115,11 @@ public class PlanController {
         return  JSON.toJSONString(map);
     }
 
+    /**
+     * 修改计划接口
+     * @param plan
+     * @return
+     */
     @RequestMapping("/modifyPlan")
     @ResponseBody
     public String modifyPlan(@RequestBody Plan plan ){
@@ -148,9 +132,44 @@ public class PlanController {
                 ajaxResponseDTO.setCode(2);
                 ajaxResponseDTO.setMsg("亲，计划名称和计划优先级都不可以为空哦");
             }else{
+                if(null !=plan.getPlanBegainTime()){
+                    //开始时间不为空时
+                    if(null != plan.getPlanEndTime()){
+                        //1.1.1判断开始时间不能小于结束时间
+                        Boolean b = DateUtils.compareDate(plan.getPlanBegainTime(),plan.getPlanEndTime(),DateUtils.YYYYMMDD);
+                        if(b){
+                            //结束时间小于开始时间，不符合规定
+                            ajaxResponseDTO.setCode(2);
+                            ajaxResponseDTO.setMsg("亲，计划开始时间不能大于计划结束时间哦！");
+                        }else{
+                            //时间符合规定，修改计划
+                            Boolean b0 = DateUtils.compareDate(new Date(),plan.getPlanEndTime(),DateUtils.YYYYMMDD);
+                            if(!b0){
+                                //开始时间大于当前时间
+
+                            }
+                            //判断结束时间是否小于当前时间
+                            Boolean b1 = DateUtils.compareDate(new Date(),plan.getPlanEndTime(),DateUtils.YYYYMMDD);
+                            if(b1){
+                                //结束时间小于当前时间，更改计划状态为已经结束
+                                plan.setPlanStatus(1);
+                            }
+                            //1.2.1 修改计划
+                            Boolean res = planService.updatePlanById(plan);
+                            //1.2.2 判断修改是否成功
+                            if(res){
+                                ajaxResponseDTO.setCode(1);
+                                ajaxResponseDTO.setMsg("耶，修改成功啦！祝您计划顺利！");
+                            }else{
+                                ajaxResponseDTO.setCode(2);
+                                ajaxResponseDTO.setMsg("啊哦，修改出了点问题呢，请再重新试一下吧！");
+                            }
+                        }
+                    }
+
+
+                }
                 //1.1.1判断开始时间不能小于结束时间
-                //  begainDate = DateUtils.dateToString(plan.getPlanBegainTime(),DateUtils.YYYYMMDD);
-                //String  endDate = DateUtils.dateToString(plan.getPlanEndTime(),DateUtils.YYYYMMDD);
                 Boolean b = DateUtils.compareDate(plan.getPlanBegainTime(),plan.getPlanEndTime(),DateUtils.YYYYMMDD);
                 if(b){
                     //结束时间小于开始时间，不符合规定
@@ -185,6 +204,11 @@ public class PlanController {
 
     }
 
+    /**
+     * 废弃计划接口
+     * @param plans
+     * @return
+     */
     @RequestMapping("/discardPlan")
     @ResponseBody
     public String discardPlan(@RequestBody String plans){
@@ -230,39 +254,20 @@ public class PlanController {
         return JSONObject.toJSONString(ajaxResponseDTO);
     }
 
-    /*@RequestMapping("/queryPlanByOptions")
-    @ResponseBody
-    public String queryPlanByOptions(@RequestBody QueryPlanListDTO queryPlanListDTO,String str, HttpServletRequest request){
-        log.info("条件查询controller接收参数queryPlanListDTO="+queryPlanListDTO+"---------str="+str);
-        log.info("进入根据条件查询计划controller，获取到的参数是【goal="+ queryPlanListDTO.getGoal()+",planPriority="+
-                queryPlanListDTO.getPlanPriority()+",planStatus="+ queryPlanListDTO.getPlanStatus()+"pagesize="+ queryPlanListDTO.getPageSize()+"pageNumber="+
-                queryPlanListDTO.getPageNumber()+",start1="+ queryPlanListDTO.getStart1()+"】");
-
-        User user = (User) request.getSession().getAttribute(USER_SESSION_KEY);
-        Map<String,Object> map = new HashMap<>();
-        List<Plan> plans = new ArrayList<>();
-        try{
-            Integer userId = user.getId();
-            Plan p = new Plan();
-            p.setUserId(userId);
-            p.setGoal(queryPlanListDTO.getGoal());
-            p.setPlanPriority(queryPlanListDTO.getPlanPriority());
-            p.setPlanStatus(queryPlanListDTO.getPlanStatus());
-            //查询计划列表
-            plans =  planService.findPlanByOptions(p, queryPlanListDTO.getPageSize(), queryPlanListDTO.getPageNumber());
-            //查询计划条数
-            int total = planService.getTotal(p);
-            map.put("total",total);
-            map.put("rows",plans);
-
-
-        }catch (Exception e){
-            log.error("根据条件查询计划异常",e);
-        }
-        log.info("查询结果是："+JSON.toJSONString(plans));
-        return  JSON.toJSONString(map);
-    }*/
-
+    /**
+     * 根据条件查询计划列及总条数
+     * @param pageSize
+     * @param pageNumber
+     * @param goal
+     * @param planPriority
+     * @param planStatus
+     * @param start1
+     * @param start2
+     * @param end1
+     * @param end2
+     * @param request
+     * @return
+     */
     @RequestMapping("/queryPlanByOptions")
     @ResponseBody
     public String queryPlanByOptions(Integer pageSize,Integer pageNumber,String goal,Integer planPriority,Integer planStatus,
@@ -295,11 +300,6 @@ public class PlanController {
             q.setGoal(goal);
             q.setPlanPriority(planPriority);
             q.setPlanStatus(planStatus);
-            Plan p = new Plan();
-            p.setUserId(userId);
-            p.setGoal(goal);
-            p.setPlanPriority(planPriority);
-            p.setPlanStatus(planStatus);
             //查询计划列表
             plans =  planService.findPlanByOptions(q);
             //查询计划条数

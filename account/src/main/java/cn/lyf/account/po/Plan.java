@@ -20,18 +20,18 @@ public class Plan {
     private Integer planPriority;
     private String planDescription;
     /**
-     * 计划提前完成时间/天
-     */
-    private Integer planAheadTime;
-    /**
      * 计划延迟完成时间/天
      */
-    private Integer planDelayTime;
+    private Integer planDelayDays;
     /**
-     * 计划状态：1.已完成 2.进行中 3.未完成 4.废弃 5.延期
+     * 计划状态：1.已完成 2.进行中 3.未完成 4.废弃 5.延期 6.未开始
      */
     private Integer planStatus;
     private Date creatTime;
     private Date updateTime;
+    /**
+     * 延期请求次数，最多允许申请3次
+     */
+    private Integer planDelayCount;
 
 }

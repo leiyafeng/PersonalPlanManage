@@ -183,7 +183,7 @@
                                         return '延期';
                                         break;
                                     case 6:
-                                        return '新建';
+                                        return '未开始';
                                         break;
                                 }
 
@@ -199,11 +199,11 @@
                             width: 30
                         },
                         {
-                            title: '结束日期',
+                            title: '预计结束日期',
                             field: 'planEndTime',
                             align: 'center',
                             formatter: function (value, row, index) {
-                                return changeDateFormat(value)
+
                             },
                             width: 30
                         },
@@ -211,6 +211,17 @@
                             title: '计划描述',
                             field: 'planDescription',
                             width: 100
+                        },
+                        {
+                            title: '操作',
+                            field: 'id',
+                            align: 'center',
+                            formatter:function(value,row,index){
+                                var e = '<a href="#" mce_href="#" onclick="detail(\''+ row.id + '\')">详情</a> ';
+                                var d = '<a href="#" mce_href="#" onclick="del(\''+ row.id +'\')">删除</a> ';
+                                return e+d;
+                            },
+                            width:50
                         }
                     ]
                 });
@@ -229,11 +240,16 @@
                     end1: $("#endTime1").val(),
                     end2: $("#endTime2").val()
                 };
-                //alert(temp)
                 return temp;
             };
             return oTableInit;
         };
+        //1. 计划详情
+        function detail(id){
+            //模态框展示计划详情
+            $("#detailPlanModal").modal('show')
+
+        }
 
         //刷新列表
         function refresh() {
@@ -290,21 +306,27 @@
             var plan = $('#table').bootstrapTable('getSelections');
             //3.1展示当前计划字段值
             if (plan.length == 1) {
-                //判断是否为已过期计划，过期计划不能修改
-                var d = new Date();
-                var today = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
-                var endTime = changeDateFormat(plan[0].planEndTime);
-                if (today > endTime) {
-                    var txt = "<h4 style='color:indianred'>亲，该计划已经结束不能修改啦！</h4>";
-                    window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
-                    return;
-                }
                 //判断是否为废弃计划，废弃计划不能修改
                 if (plan[0].planStatus == 4) {
                     var txt = "<h4 style='color:indianred'>亲，该计划已经废弃了不能修改啦！</h4>";
                     window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
                     return;
                 }
+                //判断是否为已过期计划，过期计划不能修改
+                var d = new Date();
+                var today = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+                var begainTime = changeDateFormat(plan[0].planBegainTime);
+                var endTime = changeDateFormat(plan[0].planEndTime);
+                var oDate1 = new Date(today);
+                var oDate2 = new Date(endTime);
+                var oDate3 = new Date(begainTime);
+                if (oDate1 > oDate2) {
+                    //计划过期
+                    var txt = "<h4 style='color:indianred'>亲，该计划已经结束不能修改啦！</h4>";
+                    window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
+                    return;
+                }
+
                 $("#editGoal").val(plan[0].goal);
                 var planPriority = plan[0].planPriority;
                 if (planPriority == 1) {
@@ -387,16 +409,16 @@
                     return;
                 }
             }
-            if (today > endTime) {
+            /*if (today > endTime) {
                 //alert(endTime+"---"+$("#edit-endTime").val());
                 var txt1 = "<h4 style='color:indianred'>修改后的结束时间已过期，修改后该计划状态就变成已结束计划！</h4>";
                 window.wxc.xcConfirm(txt1, window.wxc.xcConfirm.typeEnum.confirm, options);
                 return;
-            } else {
+            } else {*/
                 //确认修改计划吗？
                 var txt = "<h3 style = 'color:orange'>确认修改计划吗？</h3>";
                 window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.confirm, options);
-            }
+            //}
         };
 
         //5. 废弃计划
@@ -539,13 +561,13 @@
 
 
                     <div class="form-group">
-                        <label for="create-startTime" class="col-sm-2 control-label">开始日期</label>
+                        <label for="create-startTime" class="col-sm-2 control-label">开始日期<span style="font-size: 15px; color: red;">*</span></label>
                         <div class="col-sm-10" style="width: 300px;">
-                            <input type="text" class="form-control" id="create-startTime" autocomplete="off">
+                            <input type="text" class="form-control" id="create-startTime" autocomplete="off" readonly>
                         </div>
-                        <label for="create-endTime" class="col-sm-2 control-label">结束日期</label>
+                        <label for="create-endTime" class="col-sm-2 control-label">预计结束日期<span style="font-size: 15px; color: red;">*</span></label>
                         <div class="col-sm-10" style="width: 300px;">
-                            <input type="text" class="form-control" id="create-endTime" autocomplete="off">
+                            <input type="text" class="form-control" id="create-endTime" autocomplete="off" readonly>
                         </div>
                     </div>
 
@@ -563,6 +585,35 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="creatPlan()">保存</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 计划详情的模态窗口 -->
+<div class="modal fade" id="detailPlanModal" role="dialog">
+    <div class="modal-dialog" role="document" style="width: 50%;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title" style="color: #00B83F" align="center">计划详情</h4>
+            </div>
+            <div class="modal-body">
+                <div style="position: relative; left: 40px;">
+                    计划名称：<b >A计划</b><br><br>
+                    优先级：<b >紧急</b><br><br>
+                    计划开始时间：<b >2018-02-02</b><br><br>
+                    计划结束时间：<b >2019-02-03</b><br><br>
+                    延期/提前：<b >5</b>天完成<br><br>
+                    申请延期次数：<b >2</b>次<br><br>
+                    计划描述：<textarea class="form-control" rows="3" cols="20">这是一段描述.....这是一段描述.....这是一段描述.....这是一段描述.....这是一段描述.....这是一段描述.....这是一段描述.....</textarea>
+                    计划创建时间：<b >2018-11-01 18:48:57</b><br><br>
+                    计划更新时间：<b >2018-11-01 18:48:57</b><br><br>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
             </div>
         </div>
     </div>
@@ -604,9 +655,9 @@
                     <div class="form-group">
                         <label for="edit-startTime" class="col-sm-2 control-label">开始日期</label>
                         <div class="col-sm-10" style="width: 300px;">
-                            <input type="text" class="form-control date" id="edit-startTime" value="" readonly>
+                            <input type="text" class="form-control" id="edit-startTime" value="" readonly>
                         </div>
-                        <label for="edit-endTime" class="col-sm-2 control-label">结束日期</label>
+                        <label for="edit-endTime" class="col-sm-2 control-label">预计结束日期</label>
                         <div class="col-sm-10" style="width: 300px;">
                             <input type="text" class="form-control date" id="edit-endTime" value="" readonly>
                         </div>
