@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
@@ -255,7 +256,7 @@ public class PlanController {
     }
 
     /**
-     * 根据条件查询计划列及总条数
+     * 分页展示计划列表接口
      * @param pageSize
      * @param pageNumber
      * @param goal
@@ -313,6 +314,27 @@ public class PlanController {
         }
         log.info("查询结果是："+JSON.toJSONString(map));
         return  JSON.toJSONString(map);
+    }
+
+    /**
+     * 计划详情接口
+     * @param id
+     * @return
+     */
+    @RequestMapping("/planDetail")
+    @ResponseBody
+    public String planDetail(@RequestParam("id") Integer id){
+        AjaxResponseDTO<Plan> ajaxResponseDTO = new AjaxResponseDTO();
+        try{
+            //调service查询详情
+            Plan plan = planService.findPlanById(id);
+            ajaxResponseDTO.buildSucess(plan,"success");
+        }catch (Exception e){
+            log.error("查询计划详情接口异常",e);
+            ajaxResponseDTO.buildError("系统忙不过来啦，请稍后再试！",null);
+        }
+        log.info("查询计划详情结果是："+JSONObject.toJSONString(ajaxResponseDTO));
+        return JSONObject.toJSONString(ajaxResponseDTO);
     }
 
 }

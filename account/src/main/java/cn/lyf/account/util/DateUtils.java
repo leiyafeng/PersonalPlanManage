@@ -2,6 +2,7 @@ package cn.lyf.account.util;
 
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -78,6 +79,36 @@ public class DateUtils {
 
     }
 
+    /**
+     * 比较两个时间大小（指定格式）
+     * d1>=d2时返回true，否则返回false
+     * @param d1
+     * @param d2
+     * @param fomart
+     * @return
+     */
+    public static Boolean compareDate1(Date d1,Date d2,String fomart){
+        Boolean flag=false;
+        String  begainDate = DateUtils.dateToString(d1,fomart);
+        String  endDate = DateUtils.dateToString(d2,fomart);
+        if(Integer.valueOf(endDate)<=Integer.valueOf(begainDate)){
+            flag = true;
+        }
+        return flag;
+    }
+
+    /**
+     * 获取某个日期的后一天日期
+     * @param now
+     * @return
+     */
+    public  static Date nextDay(Date now){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(now);
+        calendar.add(Calendar.DAY_OF_MONTH, +1);//+1当前的时间加一天
+        Date date = calendar.getTime();
+        return date;
+    }
     public static Date stringToDate(String str,String format) throws Exception{
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         return sdf.parse(str);

@@ -38,4 +38,18 @@ public interface PlanDao {
      * @return
      */
     List<Plan> queryPlanByOptions(QueryPlanListDTO queryPlanListDTO);
+
+    /**
+     * 根据id查询计划详情
+     * @param id
+     * @return
+     */
+    Plan queryPlanById(Integer id);
+
+    /**
+     * 根据条件查询计划列表（不分页查询）
+     * @param planStatus
+     * @return
+     */
+    List<Plan> queryPlanByPlanStatus(Integer planStatus);
 }

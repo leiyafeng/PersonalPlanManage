@@ -38,9 +38,31 @@ public interface PlanService {
     Boolean updatePlanById(Plan plan);
 
     /**
-     * 根据条件查询计划列表
+     * 根据条件分页查询计划列表
      * @param queryPlanListDTOber
      * @return
      */
     List<Plan> findPlanByOptions(QueryPlanListDTO queryPlanListDTOber);
+
+    /**
+     * 根据id查询计划详情
+     * @param id
+     * @return
+     */
+    Plan findPlanById(Integer id);
+
+    /**
+     * 根据计划状态查询计划列表（不分页）
+     * @param planStatus
+     * @return
+     */
+    List<Plan> findPlanByPlanStatus(Integer planStatus);
+
+    /**
+     * 申请延期
+     * @param planId 计划id
+     * @param days 申请的天数
+     * @return
+     */
+    Boolean applyDelay(Integer planId , Integer days);
 }
