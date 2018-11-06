@@ -65,25 +65,31 @@ public class PlanController {
                 //1.1.3 开始时间或结束时间为空
             ajaxResponseDTO.buildError("亲，开始日期或预计结束日期不能为空啦！",null);
         }else{
-            Boolean bd = DateUtils.compareDate(plan.getPlanBegainTime(),new Date(),DateUtils.YYYYMMDD);
-            if(bd){
-                //开始日期大于当前日期
-                //未开始状态
-                plan.setPlanStatus(6);
+            //计划名称不能重复
+            Boolean planIsExist = planService.findPlanIsExistByGoal(plan.getGoal(),userId);
+            if(planIsExist){
+                //存在
+                ajaxResponseDTO.buildError("该计划名称已经存在啦，换个计划创建吧",null);
             }else{
-                //进行中状态
-                plan.setPlanStatus(2);
+                Boolean bd = DateUtils.compareDate(plan.getPlanBegainTime(),new Date(),DateUtils.YYYYMMDD);
+                if(bd){
+                    //开始日期大于当前日期
+                    //未开始状态
+                    plan.setPlanStatus(6);
+                }else{
+                    //进行中状态
+                    plan.setPlanStatus(2);
+                }
+                //2.2调service创建plan
+                Boolean b = planService.creatPlan(plan);
+                if(b){
+                    ajaxResponseDTO.buildSucess(null,"耶，创建计划成功啦！");
+                    log.info("创建计划成功");
+                }else{
+                    ajaxResponseDTO.buildError("创建计划失败啦，请稍后再试下吧！",null);
+                    log.error("创建计划失败");
+                }
             }
-            //2.2调service创建plan
-            Boolean b = planService.creatPlan(plan);
-            if(b){
-                ajaxResponseDTO.buildSucess(null,"耶，创建计划成功啦！");
-                log.info("创建计划成功");
-            }else{
-                ajaxResponseDTO.buildError("创建计划失败啦，请稍后再试下吧！",null);
-                log.error("创建计划失败");
-            }
-
         }
         String json = JSONObject.toJSONString(ajaxResponseDTO);
         return json;
@@ -324,7 +330,7 @@ public class PlanController {
     @RequestMapping("/planDetail")
     @ResponseBody
     public String planDetail(@RequestParam("id") Integer id){
-        AjaxResponseDTO<Plan> ajaxResponseDTO = new AjaxResponseDTO();
+        AjaxResponseDTO ajaxResponseDTO = new AjaxResponseDTO();
         try{
             //调service查询详情
             Plan plan = planService.findPlanById(id);
@@ -334,6 +340,61 @@ public class PlanController {
             ajaxResponseDTO.buildError("系统忙不过来啦，请稍后再试！",null);
         }
         log.info("查询计划详情结果是："+JSONObject.toJSONString(ajaxResponseDTO));
+        return JSONObject.toJSONString(ajaxResponseDTO);
+    }
+
+    /**
+     * 申请延期接口
+     * @param id
+     * @param
+     * @return
+     */
+    @RequestMapping("/planDelay")
+    @ResponseBody
+    public String planIsExist(@RequestParam("id") Integer id,Integer delayDays){
+        log.info("申请延期接口，请求参数planid="+id+"====延期天数="+delayDays);
+        AjaxResponseDTO ajaxResponseDTO = new AjaxResponseDTO();
+        try{
+            //1.0.0 校验参数
+
+            if(true){
+                //1.0.1 根据id查询计划状态
+                Plan plan = planService.findPlanById(id);
+                Integer planStatus = plan.getPlanStatus();
+                Plan p =new Plan();
+                p.setId(plan.getId());
+                Date endDate = DateUtils.addDate(plan.getPlanEndTime(),delayDays);
+                p.setPlanEndTime(endDate);
+                if(planStatus == 6){
+                    //计划未开始，直接修改结束日期，不做延期处理
+                    planService.updatePlanById(p);
+                    ajaxResponseDTO.buildSucess(null,"计划还未开始，已经帮您修改结束日期为："+DateUtils.dateToString(endDate,DateUtils.YYYY_MM_DD));
+                }else if(planStatus == 2){
+                    //计划进行中，申请延期
+                    p.setPlanDelayDays(delayDays);
+                    p.setPlanDelayCount(1);
+                    p.setPlanStatus(5);
+                    planService.updatePlanById(p);
+                    ajaxResponseDTO.buildSucess(null,"申请延期成功，祝您计划顺利！");
+                }else if(planStatus == 5){
+                    //已经延期计划，先判断是否可以申请延期
+                    if(plan.getPlanDelayCount()>=3){
+                        ajaxResponseDTO.buildError("该计划已经申请延期超过3次，不能在申请延期了！",null);
+                    }else{
+                        p.setPlanDelayDays(plan.getPlanDelayDays()+delayDays);
+                        p.setPlanDelayCount(plan.getPlanDelayCount()+1);
+                        planService.updatePlanById(p);
+                        ajaxResponseDTO.buildSucess(null,"申请延期成功，祝您计划顺利！");
+                    }
+                }
+            }else{
+                //参数校验失败
+            }
+        }catch (Exception e){
+            log.error("申请延期接口异常",e);
+            ajaxResponseDTO.buildError("系统忙不过来啦，请稍后再试！",null);
+        }
+        log.info("申请延期结果是："+JSONObject.toJSONString(ajaxResponseDTO));
         return JSONObject.toJSONString(ajaxResponseDTO);
     }
 

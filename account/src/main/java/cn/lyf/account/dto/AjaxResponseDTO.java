@@ -3,7 +3,7 @@ package cn.lyf.account.dto;
 import lombok.Data;
 
 @Data
-public class AjaxResponseDTO<T> {
+public class AjaxResponseDTO {
     /**
      * 响应码：1.成功 2.失败
      */
@@ -15,16 +15,16 @@ public class AjaxResponseDTO<T> {
     /**
      * 响应数据
      */
-    private T data;
+    private Object data;
 
-    public AjaxResponseDTO buildSucess(T sucData,String msg){
+    public AjaxResponseDTO buildSucess(Object sucData,String msg){
         this.setCode(1);
         this.setMsg(msg);
         this.setData(sucData);
         return this;
     }
 
-    public AjaxResponseDTO buildError(String msg , T data){
+    public AjaxResponseDTO buildError(String msg , Object data){
         this.setMsg(msg);
         this.setCode(2);
         this.setData(data);

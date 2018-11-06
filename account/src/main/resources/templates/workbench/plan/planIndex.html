@@ -178,10 +178,10 @@
                                         return '未完成';
                                         break;
                                     case 4:
-                                        return '废弃';
+                                        return '已废弃';
                                         break;
                                     case 5:
-                                        return '延期';
+                                        return '已延期';
                                         break;
                                     case 6:
                                         return '未开始';
@@ -214,13 +214,13 @@
                             width: 100
                         },
                         {
-                            title: '详情',
+                            title: '操作',
                             field: 'id',
                             align: 'center',
                             formatter:function(value,row,index){
                                 var e = '【<a href="#" mce_href="#" onclick="detail(\''+ row.id + '\')">查看详情</a>】';
-                                //var d = '【<a href="#" mce_href="#" onclick="del(\''+ row.id +'\')">修改</a>】';
-                                return e;
+                                var d = '【<a href="#" mce_href="#" onclick="delayModal('+ row.planStatus +','+ row.id +')">申请延期</a>】';
+                                return e+d;
                             },
                             width:50
                         }
@@ -286,10 +286,10 @@
                         }
                         $("#detailPlanBegainTime").text(changeDateFormat(plan.planBegainTime));
                         $("#detailPlanEndTime").text(changeDateFormat(plan.planEndTime));
-                        if(plan.planDelayDays<0){
-                            $("#detailDelayDays").html("延期完成天数：<b>"+(-plan.planDelayDays)+"</b>&nbsp;天");
+                        if(plan.planDelayDays>0){
+                            $("#detailDelayDays").html("延期完成天数：<b>"+plan.planDelayDays+"</b>&nbsp;天");
                         }else{
-                            $("#detailDelayDays").html("提前完成天数：<b>"+plan.planDelayDays+"</b>&nbsp;天");
+                            $("#detailDelayDays").html("提前完成天数：<b>"+(-plan.planDelayDays)+"</b>&nbsp;天");
                         }
 
                         $("#detailDelayCount").text(plan.planDelayCount);
@@ -375,19 +375,6 @@
                     return;
                 }
                 //判断是否为已过期计划，过期计划不能修改
-               /* var d = new Date();
-                var today = d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
-                var begainTime = changeDateFormat(plan[0].planBegainTime);
-                var endTime = changeDateFormat(plan[0].planEndTime);
-                var oDate1 = new Date(today);
-                var oDate2 = new Date(endTime);
-                var oDate3 = new Date(begainTime);
-                if (oDate1 > oDate2) {
-                    //计划过期
-                    var txt = "<h4 style='color:indianred'>亲，该计划已经结束不能修改啦！</h4>";
-                    window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.info);
-                    return;
-                }*/
                if(plan[0].planStatus == 1|| plan[0].planStatus == 3){
                    //计划已经结束
                    var txt = "<h4 style='color:indianred'>亲，该计划已经结束不能修改啦！</h4>";
@@ -477,12 +464,6 @@
                     return;
                 }
             }
-            /*if (today > endTime) {
-                //alert(endTime+"---"+$("#edit-endTime").val());
-                var txt1 = "<h4 style='color:indianred'>修改后的结束时间已过期，修改后该计划状态就变成已结束计划！</h4>";
-                window.wxc.xcConfirm(txt1, window.wxc.xcConfirm.typeEnum.confirm, options);
-                return;
-            } else {*/
                 //确认修改计划吗？
                 var txt = "<h3 style = 'color:orange'>确认修改计划吗？</h3>";
                 window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.confirm, options);
@@ -569,6 +550,58 @@
             $("#table").bootstrapTable('refresh');
         };
 
+        //7. 申请延期弹框
+        function delayModal(planStatus,id){
+            //判断计划是否结束
+            if(planStatus == 1 || planStatus == 3){
+                var txt = "<h3 style='color: red'>该计划已经结束，不能申请延期</h3>";
+                window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.error);
+                return;
+            }
+            //判断是否废弃
+            if(planStatus == 4){
+                var txt = "<h3 style='color: red'>该计划已经废弃，不能申请延期</h3>";
+                window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.error);
+                return;
+            }
+            $("#delayPlanDays").attr('planId',id);
+            $("#delayPlanModal").modal('show');
+        }
+
+        //8. 申请延期
+        function delay(){
+            var id = $("#delayPlanDays").attr('planId');
+            var days = $("#delayPlanDays").val();
+            //ajax请求申请延期接口
+            $.ajax({
+                url:'/plan/planDelay',
+                type:'post',
+                data:{
+                    id:id,
+                    delayDays:days
+                },
+                dataType:'json',
+                contentType: "application/x-www-form-urlencoded",
+                success:function(data){
+                    if(1 == data.code){
+                        //成功
+                        var txt = "<h3 style='color: green'>" + data.msg + "</h3>";
+                        window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.success);
+                        refresh();
+                    }else{
+                        //失败
+                        var txt = "<h3 style='color: red'>" + data.msg + "</h3>";
+                        window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.error);
+                    }
+
+                },
+                error:function(){
+                    var txt = "<h4 style='color: red'>系统暂时忙不过来啦，<br>请稍后再试啦！</h4>";
+                    window.wxc.xcConfirm(txt, window.wxc.xcConfirm.typeEnum.error);
+                }
+            })
+        }
+
         /**
          * 转换日期格式(时间戳转换为datetime格式)fomart传1时，
          * 返回日期格式带时分秒，不传或者其他都不带时分秒
@@ -590,7 +623,6 @@
                 }
             }
         }
-
         function DoOnMsoNumberFormat(cell, row, col) {
             var result = "";
             if (row > 0 && col == 0)
@@ -684,7 +716,6 @@
         </div>
     </div>
 </div>
-
 <!-- 修改计划的模态窗口 -->
 <div class="modal fade" id="editPlanModal" role="dialog">
     <div class="modal-dialog" role="document" style="width: 85%;">
@@ -741,7 +772,28 @@
         </div>
     </div>
 </div>
-
+<!--申请延期弹框 -->
+<div class="modal fade" id="delayPlanModal" role="dialog">
+    <div class="modal-dialog" role="document" style="width: 40%;">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #a6e1ec">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h3 class="modal-title" style="color: #00B83F" align="center">计划延期申请</h3>
+            </div>
+            <div class="modal-body" style="background: #ede6e2" align="center">
+                <span style="font-size: 20px">
+                    请输入申请延期天数:<input type="text" planId="" style="text-align:center;width: 8%;border-left-width:0px;border-top-width:0px;border-right-width:0px;border-bottom-color:black;background: #ede6e2" id="delayPlanDays" autocomplete="off">天
+                </span>
+            </div>
+            <div class="modal-footer" style="background: #a6e1ec">
+                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="delay()">确认</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- 计划管理body-->
 <div style="background: #a6e1ec">
     <div style="position: relative; left: 10px; top: -10px;">
@@ -752,18 +804,23 @@
 </div>
 <div style="position: relative; top: -20px; left: 0px; width: 99%; height: 100%;background: #a6e1ec">
     <div style="width: 100%; position: absolute;top: 5px; left: 10px;">
-
-
         <div class="btn-toolbar" role="toolbar" style="height: 80px;">
             <form class="form-inline" role="form" style="position: relative;top: 8%; left: 5px;">
                 <div class="form-group">
-                    <div class="input-group" style="width: 18%;height: 30%;">
-                        <div class="input-group-addon" style="background: #7EC4CC">计划名称</div>
+                    <div class="input-group" style="width: 100%;height: 30%;">
+                        <div class="input-group-addon" style="background: #7EC4CC">
+                            <span class="glyphicon glyphicon-star" style="color: rgb(0, 0, 32); font-size: 15px;"> 计划名称</span>
+                        </div>
                         <input id="queryPlanGoal" class="form-control" style="background: #d9edf7" type="text"
                                onblur="this.value=this.value.trim()">
                     </div>
-                    <div class="input-group">
-                        <div class="input-group-addon" style="background: #00B83F">优先级</div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-group" style="width: 100%;height: 30%;">
+                        <div class="input-group-addon" style="background: #00B83F">
+                            <span class="glyphicon glyphicon-asterisk" style="color: rgb(0, 0, 32); font-size: 15px;"> 优先级</span>
+                        </div>
                         <select class="form-control" style="background: #d9edf7" id="queryPlanPriority">
                             <option></option>
                             <option value="1">非紧急</option>
@@ -771,8 +828,13 @@
                             <option value="3">紧急</option>
                         </select>
                     </div>
-                    <div class="input-group">
-                        <div class="input-group-addon" style="background: #7EC4CC">状态</div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-group" style="width: 100%;height: 30%;">
+                        <div class="input-group-addon" style="background: #7EC4CC">
+                            <span class="glyphicon glyphicon-bell" style="color: rgb(0, 0, 32); font-size: 15px;"> 状态</span>
+                        </div>
                         <select class="form-control" style="background: #d9edf7" id="queryPlanStatus">
                             <option></option>
                             <option value="6">未开始</option>
@@ -782,33 +844,48 @@
                             <option value="3">未完成</option>
                         </select>
                     </div>
-                    <div class="input-group" style="width: 17%;height: 30%;">
-                        <div class="input-group-addon" style="background: #00B83F">开始日期区间</div>
-                        <input class="form-control date" type="text" id="startTime1" readonly/>
+                </div>
+                <br>
+                <div class="form-group">
+                    <div class="input-group" style="width: 55%;height: 30%;">
+
+                        <div class="input-group-addon" style="background: #00B83F">
+                            <span class="glyphicon glyphicon-time" style="color: rgb(0, 0, 32); font-size: 15px;"> 开始日期区间</span>
+                        </div>
+                        <input class="form-control date" type="text"  id="startTime1" readonly/>
                     </div>
-                    <div class="input-group" style="width: 1%;height: 30%;" align="center">
-                        --
+                    <div class="input-group" style="width: 3%;height: 30%;" align="center">
+                        ——
                     </div>
-                    <div class="input-group" style="width: 8%;height: 30%;">
+                    <div class="input-group" style="width: 30%;height: 30%;">
                         <input class="form-control date" type="text" id="startTime2" readonly/>
                     </div>
-                    <div class="input-group" style="width: 17%;height: 30%;">
-                        <div class="input-group-addon" style="background: #7EC4CC">结束日期区间</div>
+                </div>
+                <br>
+                <div class="form-group">
+                    <div class="input-group" style="width: 55%;height: 30%;">
+                        <div class="input-group-addon" style="background: #7EC4CC">
+                            <span class="glyphicon glyphicon-time" style="color: rgb(0, 0, 32); font-size: 15px;"> 结束日期区间</span>
+                        </div>
                         <input class="form-control date" type="text" id="endTime1" readonly/>
                     </div>
-                    <div class="input-group" style="width: 1%;height: 30%;" align="center">
-                        --
+                    <div class="input-group" style="width: 3%;height: 30%;" align="center">
+                        ——
                     </div>
-                    <div class="input-group" style="width: 8%;height: 30%;">
+                    <div class="input-group" style="width: 30%;height: 30%;">
                         <input class="form-control date" type="text" id="endTime2" readonly/>
                     </div>
-                    <div class="input-group">
+                </div>
+                <br>
+                <div class="form-group">
+                    <div class="input-group" style="width: 100%;height: 30%; ">
                         <button id="queryBtn" onclick="query()" type="button" class="btn btn-default"
-                                style="background: #2aabd2">查询
+                                style="background: #2aabd2;"><span class="glyphicon glyphicon-search"
+                                                                  style="color: rgb(0, 0, 32); font-size: 15px;"> 开始查询</span>
                         </button>
                     </div>
                 </div>
-            </form>
+        </form>
             <div class="btn-toolbar" role="toolbar"
                  style="background-color: #a6e1ec; height: 50px; position: relative;top: 5px;left: 5px;">
                 <div class="btn-group" style="position: relative; top: 18%;">
@@ -817,10 +894,16 @@
                     </button>
                     <button type="button" class="btn btn-default" data-toggle="modal" style="background: #2aabd2"
                             id="eidtPlanButton" onclick="editPlan()">
-                        <span class="glyphicon glyphicon-pencil"></span> 修改计划
+                        <span class="glyphicon glyphicon-edit" style="color: rgb(37, 18, 132); font-size: 15px;"> 修改计划</span>
                     </button>
-                    <button type="button" class="btn btn-danger" onclick="giveUp()"><span
-                            class="glyphicon glyphicon-minus"></span> 废弃计划
+                    <button type="button" class="btn btn-danger" onclick="giveUp()">
+                        <span class="glyphicon glyphicon-remove" style="color: rgb(255, 255, 255); font-size: 15px;"> 废弃计划</span>
+                    </button>
+                    <!--<button type="button" class="btn btn-warning" onclick="delay()"><span
+                            class="glyphicon glyphicon-minus"></span> 申请延期
+                    </button>-->
+                    <button type="button" class="btn btn-success" onclick="refresh()">
+                        <span class="glyphicon glyphicon-refresh" style="color: rgb(37, 18, 132); font-size: 15px;">刷新列表</span>
                     </button>
                 </div>
                 <table class="table table-hover" id="table" style="table-layout: fixed;background: #d9edf7 ">

@@ -65,4 +65,11 @@ public interface PlanService {
      * @return
      */
     Boolean applyDelay(Integer planId , Integer days);
+
+    /**
+     * 查询计划名字是否存在
+     * @param goal
+     * @return
+     */
+    Boolean findPlanIsExistByGoal(String goal,Integer userId);
 }

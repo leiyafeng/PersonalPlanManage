@@ -1,5 +1,6 @@
 package cn.lyf.account.util;
 
+import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -109,6 +110,22 @@ public class DateUtils {
         Date date = calendar.getTime();
         return date;
     }
+
+    /**
+     * 某个日期加上某个天数后的日期的毫秒数
+     * @param date
+     * @param day
+     * @return
+     */
+    public static Date addDate(Date date, Integer day) throws ParseException {
+        long time = date.getTime(); // 得到指定日期的毫秒数
+        day = day * 24 * 60 * 60 * 1000; // 要加上的天数转换成毫秒数
+        time += day; // 相加得到新的毫秒数
+        return new Date(time); // 将毫秒数转换成日期
+    }
+
+
+
     public static Date stringToDate(String str,String format) throws Exception{
         SimpleDateFormat sdf = new SimpleDateFormat(format);
         return sdf.parse(str);

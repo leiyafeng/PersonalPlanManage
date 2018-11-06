@@ -136,4 +136,8 @@
         from t_plan
         where plan_status= #{planStatus}
     </select>
+    <!--根据计划名称查询计划条数-->
+    <select id="getCountGoal" parameterType="HashMap" resultType="Integer">
+        select count(0) from t_plan where goal=#{goal} and user_id=#{userId}
+    </select>
 </mapper>

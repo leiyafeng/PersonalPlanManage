@@ -88,8 +88,7 @@ public class PlanServiceImpl implements PlanService {
      */
     @Override
     public Plan findPlanById(Integer id) {
-        Plan plan = new Plan();
-        plan = planDao.queryPlanById(id);
+        Plan plan = planDao.queryPlanById(id);
         return plan;
     }
 
@@ -113,6 +112,26 @@ public class PlanServiceImpl implements PlanService {
      */
     @Override
     public Boolean applyDelay(Integer planId, Integer days) {
+
         return null;
     }
+    /**
+     * 查询计划名字是否存在
+     * true 存在，false 不存在
+     * @param goal
+     * @return
+     */
+    @Override
+    public Boolean findPlanIsExistByGoal(String goal,Integer userId) {
+        Boolean b = false;
+        Map<String , Object> map = new HashMap<>();
+        map.put("goal",goal);
+        map.put("userId",userId);
+        int a = planDao.getCountGoal(map);
+        if(a>0){
+            b=true;
+        }
+        return b;
+    }
+
 }

@@ -52,4 +52,11 @@ public interface PlanDao {
      * @return
      */
     List<Plan> queryPlanByPlanStatus(Integer planStatus);
+
+    /**
+     * 根据计划名称查询计划条数
+     * @param map
+     * @return
+     */
+    int getCountGoal(Map<String,Object> map);
 }

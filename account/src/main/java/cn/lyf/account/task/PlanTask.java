@@ -5,7 +5,6 @@ import cn.lyf.account.service.PlanService;
 import cn.lyf.account.util.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +21,7 @@ public class PlanTask {
     /**
      * 定时更改未开始计划状态
      */
-    @Scheduled(cron="*/5 * * * * ?")//每5秒钟执行一次
+    //@Scheduled(cron="*/5 * * * * ?")//每5秒钟执行一次
     //@Scheduled(cron = "0 0 1 * * ?")//每天凌晨1点触发定时任务
     @Transactional
     public  void planStatusMonitor(){
@@ -58,7 +57,7 @@ public class PlanTask {
     /**
      * 定时更改到期计划状态，申请延期
      */
-    @Scheduled(cron="*/5 * * * * ?")//每5秒钟执行一次
+    //@Scheduled(cron="*/5 * * * * ?")//每5秒钟执行一次
     @Transactional
     public void planStatusDelay(){
     log.info("执行了延期状态更改开始==========");
@@ -70,25 +69,27 @@ public class PlanTask {
             log.info("查询到进行中状态计划条数是:"+plans1.size()+"==========查询到延期状态计划条数是:"+plans2.size());
             if(plans1 != null){
                 //进行中计划遍历
+                int i = 0;
                 for (Plan plan:plans1){
                     //进行中计划,比较结束时间和当前时间大小
                     Boolean b = DateUtils.compareDate(new Date(),plan.getPlanEndTime(),DateUtils.YYYYMMDD);
-                    int i = 0;
                     if(b){
                         //当前时间大于结束时间更改状态延期,进行延期
                         Plan p = new Plan();
                         p.setId(plan.getId());
                         p.setPlanStatus(5);
-                        //结束日期在当前日期基础上加1天
+                        //结束日期在当前日期基础上加1天，一期版本默认到期自动延期一天
                         Date endTime = DateUtils.nextDay(new Date());
                         p.setPlanEndTime(endTime);
                         //延期次数加一，进行中计划延期次数默认为0
                         p.setPlanDelayCount(1);
+                        //延期天数加一
+                        p.setPlanDelayDays(1);
                         planService.updatePlanById(p);
                         i++;
                     }
-                    log.info("更改了进行中计划的条数是："+i);
                 }
+                log.info("更改了进行中计划的条数是："+i);
             }
             if(plans2!=null){
                 //延期计划遍历
@@ -109,6 +110,8 @@ public class PlanTask {
                             p.setPlanEndTime(endTime);
                             //延期次数加一，进行中计划延期次数默认为0
                             p.setPlanDelayCount(plan.getPlanDelayCount()+1);
+                            //延期天数加一
+                            p.setPlanDelayDays(plan.getPlanDelayDays()+1);
                         }
                         planService.updatePlanById(p);
                         i++;
