@@ -34,4 +34,99 @@ public class Plan {
      */
     private Integer planDelayCount;
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public String getGoal() {
+        return goal;
+    }
+
+    public void setGoal(String goal) {
+        this.goal = goal;
+    }
+
+    public Date getPlanBegainTime() {
+        return planBegainTime;
+    }
+
+    public void setPlanBegainTime(Date planBegainTime) {
+        this.planBegainTime = planBegainTime;
+    }
+
+    public Date getPlanEndTime() {
+        return planEndTime;
+    }
+
+    public void setPlanEndTime(Date planEndTime) {
+        this.planEndTime = planEndTime;
+    }
+
+    public Integer getPlanPriority() {
+        return planPriority;
+    }
+
+    public void setPlanPriority(Integer planPriority) {
+        this.planPriority = planPriority;
+    }
+
+    public String getPlanDescription() {
+        return planDescription;
+    }
+
+    public void setPlanDescription(String planDescription) {
+        this.planDescription = planDescription;
+    }
+
+    public Integer getPlanDelayDays() {
+        return planDelayDays;
+    }
+
+    public void setPlanDelayDays(Integer planDelayDays) {
+        this.planDelayDays = planDelayDays;
+    }
+
+    public Integer getPlanStatus() {
+        return planStatus;
+    }
+
+    public void setPlanStatus(Integer planStatus) {
+        this.planStatus = planStatus;
+    }
+
+    public Date getCreatTime() {
+        return creatTime;
+    }
+
+    public void setCreatTime(Date creatTime) {
+        this.creatTime = creatTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public Integer getPlanDelayCount() {
+        return planDelayCount;
+    }
+
+    public void setPlanDelayCount(Integer planDelayCount) {
+        this.planDelayCount = planDelayCount;
+    }
 }
